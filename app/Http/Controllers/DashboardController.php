@@ -37,15 +37,15 @@ class DashboardController extends Controller
         $jabatan_id = auth()->user()->jabatan->id;
 
         if($jabatan_id == 1) {
-            return redirect()->route('simoja.kasi.index');
+            return redirect()->route('aset.kasi.index');
         } elseif($jabatan_id == 2) {
-            return redirect()->route('simoja.kasi.index');
+            return redirect()->route('aset.kasi.index');
         } elseif($jabatan_id == 3) {
-            return redirect()->route('simoja.koordinator.index');
+            return redirect()->route('aset.koordinator.index');
         } elseif($jabatan_id == 4) {
-            return redirect()->route('simoja.koordinator.index');
+            return redirect()->route('aset.koordinator.index');
         } elseif($jabatan_id == 5) {
-            return redirect()->route('simoja.pjlp.index');
+            return redirect()->route('aset.pjlp.index');
         }
         else {
             return view('dashboard.index');

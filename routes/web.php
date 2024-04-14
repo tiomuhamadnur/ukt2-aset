@@ -496,49 +496,61 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::controller(AsetKontrakController::class)->group(function () {
         // KASI
-        Route::get('/aset-kasi-kontrak', 'index')->name('aset.kasi.kontrak-index');
-        Route::get('/aset-kasi-create', 'create')->name('aset.kasi.kontrak-create');
-        Route::post('/aset-kasi-store', 'store')->name('aset.kasi.kontrak-store');
-        Route::get('/aset-kasi-kontrak/{uuid}/edit', 'edit')->name('aset.kasi.kontrak-edit');
-        Route::put('/aset-kasi-kontrak/{uuid}/update', 'update')->name('aset.kasi.kontrak-update');
-        Route::delete('/aset-kasi-kontrak', 'destroy')->name('aset.kasi.kontrak-delete');
+        Route::middleware('KepalaSeksi')->group(function () {
+            Route::get('/aset-kasi-kontrak', 'index')->name('aset.kasi.kontrak-index');
+            Route::get('/aset-kasi-create', 'create')->name('aset.kasi.kontrak-create');
+            Route::post('/aset-kasi-store', 'store')->name('aset.kasi.kontrak-store');
+            Route::get('/aset-kasi-kontrak/{uuid}/edit', 'edit')->name('aset.kasi.kontrak-edit');
+            Route::put('/aset-kasi-kontrak/{uuid}/update', 'update')->name('aset.kasi.kontrak-update');
+            Route::delete('/aset-kasi-kontrak', 'destroy')->name('aset.kasi.kontrak-delete');
+        });
     });
 
     Route::controller(GudangBarangController::class)->group(function () {
         // KASI
-        Route::get('/aset-gudang-utama', 'kasi_index')->name('aset.gudang-utama');
-        Route::get('/aset-gudang-utama-create', 'kasi_create')->name('aset.gudang-utama.create');
-        Route::post('/aset-gudang-utama-store', 'kasi_store')->name('aset.gudang-utama.store');
-        Route::get('/aset-gudang-utama/{uuid}/edit', 'kasi_edit')->name('aset.gudang-utama.edit');
-        Route::put('/aset-gudang-utama/{uuid}/update', 'kasi_update')->name('aset.gudang-utama.update');
-        Route::get('/aset-gudang-pulau', 'kasi_gudang_pulau')->name('aset.gudang-pulau');
-        Route::get('/aset-gudang-pulau-trans', 'kasi_gudang_pulau_trans')->name('aset.gudang-pulau-trans');
+        Route::middleware('KepalaSeksi')->group(function () {
+            Route::get('/aset-gudang-utama', 'kasi_index')->name('aset.gudang-utama');
+            Route::get('/aset-gudang-utama-create', 'kasi_create')->name('aset.gudang-utama.create');
+            Route::post('/aset-gudang-utama-store', 'kasi_store')->name('aset.gudang-utama.store');
+            Route::get('/aset-gudang-utama/{uuid}/edit', 'kasi_edit')->name('aset.gudang-utama.edit');
+            Route::put('/aset-gudang-utama/{uuid}/update', 'kasi_update')->name('aset.gudang-utama.update');
+            Route::get('/aset-gudang-pulau', 'kasi_gudang_pulau')->name('aset.gudang-pulau');
+            Route::get('/aset-gudang-pulau-trans', 'kasi_gudang_pulau_trans')->name('aset.gudang-pulau-trans');
+        });
 
         // KOORDINATOR
-        Route::get('/aset-koordinator-my-gudang', 'koordinator_index')->name('aset.koordinator.my-gudang');
-        Route::get('/aset-koordinator-create-transaction', 'koordinator_form_pemakaian')->name('aset.koordinator.form-pemakaian');
-        Route::post('/aset-koordinator-transaction', 'koordinator_store')->name('aset.koordinator.transaksi.store');
-        Route::get('/aset-koordinator-my-transaction', 'koordinator_histori_transaksi')->name('aset.koordinator.my-transaction');
-        Route::get('/aset-koordinator-tim-transaction', 'koordinator_histori_transaksi_tim')->name('aset.koordinator.tim-transaction');
+        Route::middleware('Koordinator')->group(function () {
+            Route::get('/aset-koordinator-my-gudang', 'koordinator_index')->name('aset.koordinator.my-gudang');
+            Route::get('/aset-koordinator-create-transaction', 'koordinator_form_pemakaian')->name('aset.koordinator.form-pemakaian');
+            Route::post('/aset-koordinator-transaction', 'koordinator_store')->name('aset.koordinator.transaksi.store');
+            Route::get('/aset-koordinator-my-transaction', 'koordinator_histori_transaksi')->name('aset.koordinator.my-transaction');
+            Route::get('/aset-koordinator-tim-transaction', 'koordinator_histori_transaksi_tim')->name('aset.koordinator.tim-transaction');
+        });
 
         // PJLP
-        Route::get('/aset-pjlp-my-gudang', 'pjlp_index')->name('aset.pjlp.my-gudang');
-        Route::get('/aset-pjlp-create-transaction', 'pjlp_form_pemakaian')->name('aset.pjlp.form-pemakaian');
-        Route::post('/aset-pjlp-transaction', 'pjlp_store')->name('aset.pjlp.transaksi.store');
-        Route::get('/aset-pjlp-my-transaction', 'pjlp_histori_transaksi')->name('aset.pjlp.my-transaction');
+        Route::middleware('PJLP')->group(function () {
+            Route::get('/aset-pjlp-my-gudang', 'pjlp_index')->name('aset.pjlp.my-gudang');
+            Route::get('/aset-pjlp-create-transaction', 'pjlp_form_pemakaian')->name('aset.pjlp.form-pemakaian');
+            Route::post('/aset-pjlp-transaction', 'pjlp_store')->name('aset.pjlp.transaksi.store');
+            Route::get('/aset-pjlp-my-transaction', 'pjlp_histori_transaksi')->name('aset.pjlp.my-transaction');
+        });
     });
 
     Route::controller(ShippingController::class)->group(function () {
         // KASI
-        Route::get('/aset-pengiriman', 'index_pengiriman')->name('aset.pengiriman.index');
-        Route::get('/aset-pengiriman-create', 'create_pengiriman')->name('aset.pengiriman.create');
-        Route::post('/aset-pengiriman', 'store_pengiriman')->name('aset.pengiriman.store');
-        Route::get('/aset-pengiriman/{no_resi}/detail', 'show_pengiriman')->name('aset.pengiriman.show');
+        Route::middleware('KepalaSeksi')->group(function () {
+            Route::get('/aset-pengiriman', 'index_pengiriman')->name('aset.pengiriman.index');
+            Route::get('/aset-pengiriman-create', 'create_pengiriman')->name('aset.pengiriman.create');
+            Route::post('/aset-pengiriman', 'store_pengiriman')->name('aset.pengiriman.store');
+            Route::get('/aset-pengiriman/{no_resi}/detail', 'show_pengiriman')->name('aset.pengiriman.show');
+        });
 
         // KOORDINATOR
-        Route::get('/aset-penerimaan', 'index_penerimaan')->name('aset.penerimaan.index');
-        Route::put('/aset-penerimaan/terima', 'terima_barang')->name('aset.penerimaan.terima');
-        Route::get('/aset-penerimaan/generate-BAST', 'generateBAST')->name('aset.penerimaan.BAST');
-        Route::get('/aset-penerimaan/{no_resi}/detail', 'show_penerimaan')->name('aset.penerimaan.show');
+        Route::middleware('Koordinator')->group(function () {
+            Route::get('/aset-penerimaan', 'index_penerimaan')->name('aset.penerimaan.index');
+            Route::put('/aset-penerimaan/terima', 'terima_barang')->name('aset.penerimaan.terima');
+            Route::get('/aset-penerimaan/generate-BAST', 'generateBAST')->name('aset.penerimaan.BAST');
+            Route::get('/aset-penerimaan/{no_resi}/detail', 'show_penerimaan')->name('aset.penerimaan.show');
+        });
     });
 });
