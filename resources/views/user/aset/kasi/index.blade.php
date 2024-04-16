@@ -35,8 +35,8 @@
                                 <div class="launch-box h-180">
                                     <h3>Gudang Utama</h3>
                                     <i class="fa fa-building"></i>
-                                    <p>Jenis Aset</p>
-                                    <h3>23003 Aset</h3>
+                                    <p>Data Aset Gudang Utama</p>
+                                    <h3>Lihat Daftar</h3>
                                 </div>
                             </a>
                         </div>
@@ -45,18 +45,18 @@
                                 <div class="launch-box h-180">
                                     <h3>Pengiriman</h3>
                                     <i class="fa fa-truck"></i>
-                                    <p>Januari, 2024</p>
-                                    <h3>10 Pengiriman</h3>
+                                    <p>{{ $tanggal }}</p>
+                                    <h3>Lihat Data Pengiriman</h3>
                                 </div>
                             </a>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                            <a href="{{ route('aset.gudang-pulau') }}">
+                            <a href="#" data-toggle="modal" data-target="#basicModal">
                                 <div class="launch-box h-180">
                                     <h3>Monitoring Stock</h3>
                                     <i class="fa fa-line-chart"></i>
                                     <p>Monitoring Stock Barang Gudang Pulau</p>
-                                    <h3>4 Gudang</h3>
+                                    <h3>Lihat Daftar</h3>
                                 </div>
                             </a>
                         </div>
@@ -66,6 +66,27 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="basicModal" tabindex="-1" role="dialog" aria-labelledby="basicModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="basicModalLabel">Dev Proccess</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-center">
+                        <h5>Fitur ini masih dalam proses pengembangan</h5>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <style>
         @media (max-width: 1100px) {
             h3 {

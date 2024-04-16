@@ -1,7 +1,7 @@
 <header class="header">
     <div class="logo-wrapper">
         <a href="{{ route('dashboard.index') }}" class="logo">
-            <img src="{{ asset('assets/img/simojalogo.png') }}" alt="" style="max-height: 200px" />
+            <img src="{{ asset('assets/img/asetlogo2.png') }}" alt="" style="max-height: 200px" />
         </a>
     </div>
     <div class="header-items">

@@ -2,69 +2,61 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Login | UKT2.ORG Kep. Seribu</title>
-    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.2.0/css/all.css'>
-    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.2.0/css/fontawesome.css'>
-    <link rel="stylesheet" href="{{ asset('assets/css/csslogin/style.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="shortcut icon" href="{{ asset('assets/img/ukt2logo.png') }}">
-
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASET | UKT2.ORG</title>
+    <link rel="shortcut icon" href="img/ukt2logo.png" />
+    <link rel="stylesheet" href="{{ asset('assets/css/csslogin/style.css') }}" />
 </head>
 
 <body>
-    <div class="container">
-        <div class="screen">
-            <div class="img-back">
-                <div class="text-head">
-                    <h1 class="text-center">SIMOJA</h1>
-                </div>
-                <div class="screen__content">
-                    <div class="title">
-                        <img src="{{ asset('assets/img/ukt2logo.png') }}" alt="" class="login-logo">
-                    </div>
-                    <form class="login" action="{{ route('login') }}" method="POST">
+    <main>
+        <div class="box">
+            <div class="inner-box">
+                <div class="forms-wrap">
+                    <form class="sign-in-form" class="login" action="{{ route('login') }}" method="POST">
                         @csrf
                         @method('post')
-                        <div class="login__field">
-                            <i class="login__icon fas fa-user"></i>
-                            <input type="text" name="email" class="login__input" placeholder="Masukkan Email"
-                                required autofocus>
+                        <div class="logo">
+                            <h1>Aset | UKT2.ORG</h1>
+                            <img src="{{ asset('assets/img/ukt2logo.png') }}" alt="image">
                         </div>
-                        @error('email')
-                            <span class="badge bg-danger p-2 mb-3" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                        <div class="login__field">
-                            <i class="login__icon fas fa-lock"></i>
-                            <input type="password" name="password" class="login__input" placeholder="Masukkan Password"
-                                required>
+                        <div class="heading">
+                            <h2>Selamat Datang,</h2>
                         </div>
-                        @error('password')
-                            <span class="badge badge-danger p-2 mb-3" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                        <button class="button login__submit">
-                            <span class="button__text">Masuk</span>
-                            <i class="button__icon fas fa-chevron-right"></i>
-                        </button>
+                        <div class="actual-form">
+                            <div class="input-wrap">
+                                <input type="text" minlength="4" name="email" class="input-field"
+                                    autocomplete="off" placeholder="Masukkan Email" required autofocus />
+                            </div>
+                            @error('email')
+                                <span class="badge bg-danger p-2 mb-3" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+
+                            <div class="input-wrap">
+                                <input type="password" name="password" class="input-field"
+                                    autocomplete="off" placeholder="Masukkan Password" required />
+                            </div>
+                            @error('password')
+                                <span class="badge badge-danger p-2 mb-3" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                            <input type="submit" value="Masuk" class="sign-btn" />
+                        </div>
                     </form>
+                </div>
+                <div class="carousel">
+                    <div class="images-wrapper">
+                        <img src="{{ asset('assets/img/ukt2logo.png') }}" class="image img-1 show" alt="" />
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <footer id="footer">
-        <p>&copy; <span id="currentYear"></span> SIMOJA. All Rights Reserved.</p>
-    </footer>
+    </main>
 </body>
-
-<script>
-    var currentYear = new Date().getFullYear();
-
-    document.getElementById("currentYear").textContent = currentYear;
-</script>
 
 </html>

@@ -88,7 +88,7 @@
                                 @endforeach
                                 @if ($transaksi->count() == 0)
                                     <tr>
-                                        <td class="text-center" colspan="9">
+                                        <td class="text-center" colspan="10">
                                             Data transaksi barang atas nama <span
                                                 class="font-weight-bold">{{ auth()->user()->name }}</span> tidak ditemukan.
                                         </td>

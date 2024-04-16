@@ -23,8 +23,18 @@ class Kontrak extends Model
         });
     }
 
+    public function canBeDeleted()
+    {
+        return $this->barang->isEmpty();
+    }
+
     public function seksi()
     {
         return $this->belongsTo(Seksi::class);
+    }
+
+    public function barang()
+    {
+        return $this->hasMany(Barang::class);
     }
 }

@@ -25,7 +25,7 @@
                                 <div class="launch-box h-180">
                                     <h3>Terima Barang</h3>
                                     <i class="fa fa-truck"></i>
-                                    <p>List Penerimaan Barang</p>
+                                    <p>{{ $tanggal }}</p>
                                     <h3>Lihat Daftar</h3>
                                 </div>
                             </a>
@@ -36,7 +36,7 @@
                                     <h3>Gudang Barang</h3>
                                     <i class="fa fa-building"></i>
                                     <p>Daftar Barang di Gudang</p>
-                                    <h3>4 Gudang</h3>
+                                    <h3>Lihat Daftar</h3>
                                 </div>
                             </a>
                         </div>

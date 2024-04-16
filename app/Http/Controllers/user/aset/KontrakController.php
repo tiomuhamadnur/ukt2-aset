@@ -94,11 +94,16 @@ class KontrakController extends Controller
         $id = $request->id;
         $kontrak = Kontrak::findOrFail($id);
 
-        if($kontrak->lampiran != null){
+        if (!is_null($kontrak->lampiran)) {
             Storage::delete($kontrak->lampiran);
         }
-        $kontrak->delete();
 
-        return redirect()->route('aset.kasi.kontrak-index')->withNotify('Data berhasil dihapus!');
+        if ($kontrak->canBeDeleted()) {
+            $kontrak->delete();
+
+            return redirect()->route('aset.kasi.kontrak-index')->withNotify('Data berhasil dihapus!');
+        } else {
+            return redirect()->route('aset.kasi.kontrak-index')->withError('Data tidak dapat dihapus karena masih terkait dengan data lain!');
+        }
     }
 }
