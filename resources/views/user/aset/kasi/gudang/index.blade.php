@@ -65,6 +65,7 @@
                                 </div> --}}
                             </div>
                         </div>
+                        {{-- PAGINASI --}}
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                             <form class="form-inline mb-2 d-flex justify-content-end">
                                 <input class="form-control mr-sm-2" type="search" placeholder="Cari sesuatu di sini..."
