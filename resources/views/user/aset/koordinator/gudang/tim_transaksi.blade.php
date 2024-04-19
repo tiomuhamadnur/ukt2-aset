@@ -32,7 +32,7 @@
                                     Kembali</a>
                                 <a href="{{ route('aset.koordinator.my-gudang') }}"
                                     class="btn btn-primary mr-2 mb-2 mb-sm-0"><i class="fa fa-building"></i> Ke Gudang</a>
-                                <button class="btn btn-primary mr-2 mb-2 mb-sm-0">Export to Excel</button>
+                                {{-- <button class="btn btn-primary mr-2 mb-2 mb-sm-0">Export to Excel</button> --}}
                                 <a href="" class="btn btn-primary mr-2 mb-2 mb-sm-0" data-toggle="modal"
                                     data-target="#modalFilter"><i class="fa fa-filter"></i></a>
                             </div>
@@ -45,6 +45,7 @@
                             </form>
                         </div>
                     </div>
+                    {{-- PAGINASI BELUM --}}
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="dataTable">
                             <thead>
@@ -89,7 +90,7 @@
                                 @if ($transaksi->count() == 0)
                                     <tr>
                                         <td class="text-center" colspan="10">
-                                            Data transaksi barang atas nama <span
+                                            Data transaksi barang tim Koordinator <span
                                                 class="font-weight-bold">{{ auth()->user()->name }}</span> tidak ditemukan.
                                         </td>
                                     </tr>

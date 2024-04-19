@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers\user\aset;
 
+use App\Models\Pulau;
 use App\Models\Seksi;
 use App\Models\Barang;
 use App\Models\Gudang;
+use App\Models\Kontrak;
+use App\Models\FormasiTim;
+use App\Models\BarangPulau;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\PengirimanBarang;
 use App\Http\Controllers\Controller;
-use App\Models\BarangPulau;
-use App\Models\FormasiTim;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Carbon;
 
 class ShippingController extends Controller
 {
@@ -35,7 +37,10 @@ class ShippingController extends Controller
                             ->orderBy('tanggal_kirim', 'DESC')
                             ->get();
 
-        return view('user.aset.kasi.pengiriman.index', compact(['pengiriman_barang']));
+        $pulau = Pulau::all();
+        $kontrak = Kontrak::where('seksi_id', $seksi_id)->get();
+
+        return view('user.aset.kasi.pengiriman.index', compact(['pengiriman_barang', 'pulau', 'kontrak']));
     }
 
     public function create_pengiriman(Request $request)

@@ -17,6 +17,7 @@ class KontrakController extends Controller
         $start_date = null;
         $end_date = null;
         $sort = 'DESC';
+        $tahun = Carbon::now()->format("Y");
 
         $kontrak = Kontrak::where('seksi_id', $seksi_id)->orderBy('tanggal', $sort)->get();
 
@@ -25,6 +26,7 @@ class KontrakController extends Controller
             'start_date' => $start_date,
             'end_date' => $end_date,
             'sort' => $sort,
+            'tahun' => $tahun
         ]);
     }
 

@@ -42,7 +42,7 @@
                                     title="Reset Filter">
                                     <i class="fa fa-refresh"></i>
                                 </a>
-                                <div class="mr-2 mb-2 mb-sm-0 nav-item dropdown">
+                                {{-- <div class="mr-2 mb-2 mb-sm-0 nav-item dropdown">
                                     <button class="btn btn-primary mr-2 mb-2 mb-sm-0 nav-link text-white" href="#"
                                         id="appsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
                                         aria-expanded="false" title="Export">
@@ -62,7 +62,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -90,6 +90,7 @@
                                     <th class="text-center">Nama Barang</th>
                                     <th class="text-center">Merk Barang</th>
                                     <th class="text-center">Jenis Barang</th>
+                                    <th class="text-center">Harga <br> (Termasuk PPN)</th>
                                     {{-- <th class="text-center">Kode Barang</th> --}}
                                     <th class="text-center">Stock Awal</th>
                                     <th class="text-center">Stock Aktual</th>
@@ -119,6 +120,7 @@
                                             <td class="text-center font-weight-bolder">{{ $item->name }}</td>
                                             <td class="text-center">{{ $item->merk }}</td>
                                             <td class="text-center">{{ $item->jenis }}</td>
+                                            <td class="text-center">{{ formatRupiah($item->harga, true) }}</td>
                                             {{-- <td class="text-center">{{ $item->code }}</td> --}}
                                             <td class="text-center">{{ $item->stock_awal }} {{ $item->satuan }}</td>
                                             <td class="text-center">{{ $item->stock_aktual }} {{ $item->satuan }}</td>
@@ -218,7 +220,7 @@
     <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form action="{{ route('barang.filter') }}" method="GET">
+            <form action="#" method="GET">
                 @csrf
                 @method('GET')
                 <div class="modal-content">
@@ -247,8 +249,6 @@
                                     <label for="periode">Tahun Pengadaan</label>
                                     <select name="periode" class="form-control">
                                         <option value="" selected disabled>- pilih periode pengadaan -</option>
-                                        <option value="{{ $tahun - 3 }}">{{ $tahun - 3 }}</option>
-                                        <option value="{{ $tahun - 2 }}">{{ $tahun - 2 }}</option>
                                         <option value="{{ $tahun - 1 }}">{{ $tahun - 1 }}</option>
                                         <option value="{{ $tahun }}">{{ $tahun }}</option>
                                         <option value="{{ $tahun + 1 }}">{{ $tahun + 1 }}</option>

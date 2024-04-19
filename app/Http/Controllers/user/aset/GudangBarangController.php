@@ -257,14 +257,21 @@ class GudangBarangController extends Controller
     public function koordinator_histori_transaksi()
     {
         $user_id = auth()->user()->id;
+        $seksi_id = auth()->user()->struktur->seksi->id;
         $sort = 'DESC';
         $transaksi = TransaksiBarangPulau::where('user_id', $user_id)
                     ->orderBy('tanggal', $sort)
                     ->get();
 
+
+        $kontrak = Kontrak::where('seksi_id', $seksi_id)->get();
+        $tahun = Carbon::now()->format('Y');
+
         return view('user.aset.koordinator.gudang.my_transaksi', compact([
             'transaksi',
             'sort',
+            'kontrak',
+            'tahun'
         ]));
     }
 
@@ -301,6 +308,7 @@ class GudangBarangController extends Controller
     public function pjlp_index()
     {
         $user_id = auth()->user()->id;
+        $seksi_id = auth()->user()->struktur->seksi->id;
         $formasi_tim = FormasiTim::where('periode', Carbon::now()->year)
                                 ->where('anggota_id', $user_id)
                                 ->orWhere('koordinator_id', $user_id)
@@ -314,9 +322,14 @@ class GudangBarangController extends Controller
                         ->whereRelation('barang.kontrak.seksi', 'id', '=', $seksi_id)
                         ->get();
 
+        $kontrak = Kontrak::where('seksi_id', $seksi_id)->get();
+        $tahun = Carbon::now()->format('Y');
+
         return view('user.aset.pjlp.gudang.my_gudang', compact([
             'barang_pulau',
             'formasi_tim',
+            'kontrak',
+            'tahun',
         ]));
     }
 
@@ -384,14 +397,20 @@ class GudangBarangController extends Controller
     public function pjlp_histori_transaksi()
     {
         $user_id = auth()->user()->id;
+        $seksi_id = auth()->user()->struktur->seksi->id;
         $sort = 'DESC';
         $transaksi = TransaksiBarangPulau::where('user_id', $user_id)
                     ->orderBy('tanggal', $sort)
                     ->get();
 
+        $kontrak = Kontrak::where('seksi_id', $seksi_id)->get();
+        $tahun = Carbon::now()->format('Y');
+
         return view('user.aset.pjlp.gudang.my_transaksi', compact([
             'transaksi',
             'sort',
+            'kontrak',
+            'tahun'
         ]));
     }
 }

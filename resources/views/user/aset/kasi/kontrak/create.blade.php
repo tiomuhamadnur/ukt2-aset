@@ -68,3 +68,15 @@
         </div>
     </div>
 @endsection
+
+@section('javascript')
+<script>
+    // Percobaan Disable after Klik Button utk Prevent Spam Klik Submit
+    document.getElementById("submitBtn").addEventListener("click", function(event) {
+        if (!validateInputs()) {
+            event.preventDefault();
+        }
+        this.disabled = true;
+    });
+</script>
+@endsection

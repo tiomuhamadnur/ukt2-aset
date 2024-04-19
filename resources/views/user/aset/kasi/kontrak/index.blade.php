@@ -38,8 +38,8 @@
                                     title="Reset Filter">
                                     <i class="fa fa-refresh"></i>
                                 </a>
-                                <div class="mr-2 mb-2 mb-sm-0 nav-item dropdown">
-                                    <button class="btn btn-primary mr-2 mb-2 mb-sm-0 nav-link text-white" href="#"
+                                {{-- <div class="mr-2 mb-2 mb-sm-0 nav-item dropdown">
+                                    <button class="btn btn-primary mr-2 mb-2 mb-sm-0 text-white" href="#"
                                         id="appsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
                                         aria-expanded="false" title="Export">
                                         <i class="fa fa-paper-plane"></i> Export
@@ -58,7 +58,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -69,6 +69,7 @@
                             </form>
                         </div>
                     </div>
+                    {{-- PAGINASI BELUM --}}
                     <div class="table-responsive">
                         <div class="table-responsive mt-2">
                             <table class="table table-bordered table-striped" id="dataTable">
@@ -79,7 +80,7 @@
                                         <th class="text-center">No. Kontrak</th>
                                         <th class="text-center">Nilai Kontrak</th>
                                         <th class="text-center">Seksi</th>
-                                        <th class="text-center">Tanggal</th>
+                                        <th class="text-center">Tanggal Pengadaan</th>
                                         <th class="text-center">Dokumen</th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
@@ -135,15 +136,24 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Filter Data Kinerja</h5>
+                    <h5 class="modal-title">Filter Data Kontrak</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="formFilter" action="{{ route('simoja.kasi.kinerja.filter') }}" method="GET">
+                    <form id="formFilter" action="#" method="GET">
                         @csrf
                         @method('GET')
+                        <div class="form-group">
+                            <label for="periode">Tahun Pengadaan</label>
+                            <select name="periode" class="form-control">
+                                <option value="" selected disabled>- pilih periode pengadaan -</option>
+                                <option value="{{ $tahun - 1 }}">{{ $tahun - 1 }}</option>
+                                <option value="{{ $tahun }}">{{ $tahun }}</option>
+                                <option value="{{ $tahun + 1 }}">{{ $tahun + 1 }}</option>
+                            </select>
+                        </div>
                         <label for="periode">Periode</label>
                         <div class="form-row gutters">
                             <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">

@@ -34,8 +34,8 @@
                                     title="Reset Filter">
                                     <i class="fa fa-refresh"></i>
                                 </a>
-                                <div class="mr-2 mb-2 mb-sm-0 nav-item dropdown">
-                                    <button class="btn btn-primary mr-2 mb-2 mb-sm-0 nav-link text-white" href="#"
+                                {{-- <div class="mr-2 mb-2 mb-sm-0 nav-item dropdown">
+                                    <button class="btn btn-primary mr-2 mb-2 mb-sm-0 text-white" href="#"
                                         id="appsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
                                         aria-expanded="false" title="Export">
                                         <i class="fa fa-paper-plane"></i> Export
@@ -54,7 +54,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -65,6 +65,7 @@
                             </form>
                         </div>
                     </div>
+                    {{-- PAGINASI BELUM --}}
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="dataTable">
                             <thead>
@@ -167,12 +168,23 @@
                                 <label for="">Pulau</label>
                                 <select name="kontrak" class="form-control" required>
                                     <option value="" selected disabled>- pilih pulau -</option>
+                                    @foreach ($pulau as $item)
+                                            <option value="{{ $item->id }}">
+                                                {{ $item->name }}
+                                            </option>
+                                        @endforeach
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="">Kontrak</label>
                                 <select name="kontrak" class="form-control" required>
                                     <option value="" selected disabled>- pilih kontrak -</option>
+                                    @foreach ($kontrak as $item)
+                                            <option value="{{ $item->id }}">{{ $item->no_kontrak }}
+                                                - {{ $item->name }}
+                                                - {{ $item->seksi->name }} - ({{ $item->tanggal }})
+                                            </option>
+                                        @endforeach
                                 </select>
                             </div>
                             <div class="form-group">

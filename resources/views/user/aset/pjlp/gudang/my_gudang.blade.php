@@ -50,6 +50,7 @@
                             </form>
                         </div>
                     </div>
+                    {{-- PAGINASI BELUM --}}
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="dataTable">
                             <thead>
@@ -125,8 +126,14 @@
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="form-group">
                                 <label for="">Kontrak</label>
-                                <select name="kontrak" class="form-control" required>
+                                <select name="kontrak_id" class="form-control">
                                     <option value="" selected disabled>- pilih kontrak -</option>
+                                    @foreach ($kontrak as $item)
+                                        <option value="{{ $item->id }}">{{ $item->no_kontrak }}
+                                            - {{ $item->name }}
+                                            - {{ $item->seksi->name }} - ({{ $item->tanggal }})
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="form-group">
@@ -140,8 +147,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="periode">Tahun Pengadaan</label>
-                                <select name="periode" class="form-control" required>
+                                <select name="periode" class="form-control">
                                     <option value="" selected disabled>- pilih periode pengadaan -</option>
+                                    <option value="{{ $tahun - 1 }}">{{ $tahun - 1 }}</option>
+                                    <option value="{{ $tahun }}">{{ $tahun }}</option>
+                                    <option value="{{ $tahun + 1 }}">{{ $tahun + 1 }}</option>
                                 </select>
                             </div>
                         </div>

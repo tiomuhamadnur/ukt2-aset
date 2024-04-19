@@ -50,6 +50,7 @@
                             </form>
                         </div>
                     </div>
+                    {{-- PAGINASI BELUM --}}
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="dataTable">
                             <thead>
