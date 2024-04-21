@@ -8,6 +8,7 @@
     <title>ASET | UKT2.ORG</title>
     <link rel="shortcut icon" href="img/ukt2logo.png" />
     <link rel="stylesheet" href="{{ asset('assets/css/csslogin/style.css') }}" />
+    <link rel="shortcut icon" href="{{ asset('assets/img/ukt2logo.png') }}">
 </head>
 
 <body>
@@ -37,8 +38,8 @@
                             @enderror
 
                             <div class="input-wrap">
-                                <input type="password" name="password" class="input-field"
-                                    autocomplete="off" placeholder="Masukkan Password" required />
+                                <input type="password" name="password" class="input-field" autocomplete="off"
+                                    placeholder="Masukkan Password" required />
                             </div>
                             @error('password')
                                 <span class="badge badge-danger p-2 mb-3" role="alert">
