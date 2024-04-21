@@ -20,9 +20,11 @@ use Illuminate\Support\Facades\Storage;
 class ShippingController extends Controller
 {
     // KASI
-    public function index_pengiriman()
+    public function index_pengiriman(Request $request)
     {
         $seksi_id = auth()->user()->struktur->seksi->id;
+        $perPage = $request->perPage ?? 50;
+        $sort = 'DESC';
         $pengiriman_barang = PengirimanBarang::select(
                             'no_resi',
                             'submitter_id',
@@ -34,13 +36,24 @@ class ShippingController extends Controller
                             'status')
                             ->whereRelation('barang.kontrak', 'seksi_id', '=', $seksi_id)
                             ->distinct()
-                            ->orderBy('tanggal_kirim', 'DESC')
-                            ->get();
+                            ->orderBy('tanggal_kirim', $sort)
+                            ->paginate($perPage);
 
-        $pulau = Pulau::all();
-        $kontrak = Kontrak::where('seksi_id', $seksi_id)->get();
+        $gudang_pulau = Gudang::orderBy('name', 'ASC')->get();
+        $gudang_id = '';
+        $status = '';
+        $start_date = '';
+        $end_date = '';
 
-        return view('user.aset.kasi.pengiriman.index', compact(['pengiriman_barang', 'pulau', 'kontrak']));
+        return view('user.aset.kasi.pengiriman.index', [
+            'pengiriman_barang' => $pengiriman_barang,
+            'gudang_pulau' => $gudang_pulau,
+            'sort' => $sort,
+            'gudang_id' => $gudang_id,
+            'status' => $status,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+        ]);
     }
 
     public function create_pengiriman(Request $request)
@@ -161,6 +174,64 @@ class ShippingController extends Controller
         return $no_resi;
     }
 
+    public function filter_pengiriman(Request $request)
+    {
+        $seksi_id = auth()->user()->struktur->seksi->id;
+        $gudang_id = $request->gudang_id;
+        $status = $request->status;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date ?? $start_date;
+        $sort = $request->sort;
+
+        $pengiriman_barang = PengirimanBarang::query();
+
+        // Filter by seksi_id
+        $pengiriman_barang->whereRelation('barang.kontrak', 'seksi_id', '=', $seksi_id);
+
+        // Filter by gudang_id
+        $pengiriman_barang->when($gudang_id, function ($query) use ($request) {
+            return $query->where('gudang_id', $request->gudang_id);
+        });
+
+        // Filter by status
+        $pengiriman_barang->when($status, function ($query) use ($request) {
+            return $query->where('status', $request->status);
+        });
+
+        // Filter by tanggal
+        if ($start_date != null and $end_date != null) {
+            $pengiriman_barang->whereBetween('tanggal_kirim', [$start_date, $end_date]);
+        }
+
+        $pengiriman_barang->select(
+            'no_resi',
+            'submitter_id',
+            'receiver_id',
+            'gudang_id',
+            'tanggal_kirim',
+            'tanggal_terima',
+            'catatan',
+            'status',
+        );
+
+        // Order By
+        $pengiriman_barang = $pengiriman_barang->distinct()
+                        ->orderBy('tanggal_kirim', $sort)
+                        ->paginate();
+
+        $gudang_pulau = Gudang::orderBy('name', 'ASC')->get();
+
+        return view('user.aset.kasi.pengiriman.index', [
+            'pengiriman_barang' => $pengiriman_barang,
+            'gudang_pulau' => $gudang_pulau,
+            'sort' => $sort,
+            'gudang_id' => $gudang_id,
+            'status' => $status,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+        ]);
+    }
+
 
 
 
@@ -200,10 +271,11 @@ class ShippingController extends Controller
     {
         $request->validate([
             'ids.*' => 'required',
+            'tanggal_terima' => 'required',
         ]);
 
         $ids = $request->ids;
-        $tanggal_terima = Carbon::now();
+        $tanggal_terima = $request->tanggal_terima;
         $gudang = '';
 
         foreach ($ids as $key => $id) {

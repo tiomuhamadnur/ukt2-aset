@@ -35,6 +35,9 @@
                                 {{-- <button class="btn btn-primary mr-2 mb-2 mb-sm-0">Export to Excel</button> --}}
                                 <a href="" class="btn btn-primary mr-2 mb-2 mb-sm-0" data-toggle="modal"
                                     data-target="#modalFilter"><i class="fa fa-filter"></i></a>
+                                <a href="{{ route('aset.pjlp.my-transaction') }}"
+                                    class="btn btn-primary mr-2 mb-2 mb-sm-0"><i class="fa fa-refresh"></i>
+                                </a>
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -45,7 +48,15 @@
                             </form>
                         </div>
                     </div>
-                    {{-- PAGINASI BELUM --}}
+                    <div class="paginate-style">
+                        <div class="d-flex justify-content-center mb-2">
+                            <nav aria-label="Pagination">
+                                <ul class="pagination">
+                                    {{ $transaksi->links('vendor.pagination.bootstrap-4') }}
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="dataTable">
                             <thead>
@@ -65,7 +76,9 @@
                             <tbody>
                                 @foreach ($transaksi as $item)
                                     <tr>
-                                        <td class="text-center">{{ $loop->iteration }}</td>
+                                        <td class="text-center">
+                                            {{ ($transaksi->currentPage() - 1) * $transaksi->perPage() + $loop->index + 1 }}
+                                        </td>
                                         <td class="text-center font-weight-bold">{{ $item->user->name }}</td>
                                         <td class="text-center">{{ $item->barang_pulau->gudang->name }}</td>
                                         <td class="text-center font-weight-bold">{{ $item->barang_pulau->barang->name }}
@@ -108,50 +121,66 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Filter Data Barang</h5>
+                    <h5 class="modal-title">Filter Data Transaksi Barang</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-row gutters">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label for="">Kontrak</label>
-                                <select name="kontrak_id" class="form-control">
-                                    <option value="" selected disabled>- pilih kontrak -</option>
-                                    @foreach ($kontrak as $item)
-                                        <option value="{{ $item->id }}">{{ $item->no_kontrak }}
-                                            - {{ $item->name }}
-                                            - {{ $item->seksi->name }} - ({{ $item->tanggal }})
+                    <form id="formFilter" action="{{ route('aset.pjlp.my-transaction.filter') }}" method="GET">
+                        @csrf
+                        @method('GET')
+                        <div class="form-row gutters">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group">
+                                    <label for="">Jenis Barang</label>
+                                    <select name="jenis" class="form-control">
+                                        <option value="" selected disabled>- pilih jenis barang -</option>
+                                        <option value="consumable" @if ($jenis == 'consumable') selected @endif>
+                                            Consumable
                                         </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="">Jenis Barang</label>
-                                <select name="jenis_barang" class="form-control" required>
-                                    <option value="" selected disabled>- pilih jenis barang -</option>
-                                    <option value="consumable">Consumable</option>
-                                    <option value="tools">Tools</option>
+                                        <option value="tools" @if ($jenis == 'tools') selected @endif>Tools
+                                        </option>
 
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="periode">Tahun Pengadaan</label>
-                                <select name="periode" class="form-control">
-                                    <option value="" selected disabled>- pilih periode pengadaan -</option>
-                                    <option value="{{ $tahun - 1 }}">{{ $tahun - 1 }}</option>
-                                    <option value="{{ $tahun }}">{{ $tahun }}</option>
-                                    <option value="{{ $tahun + 1 }}">{{ $tahun + 1 }}</option>
-                                </select>
+                                    </select>
+                                </div>
+                                <label for="periode">Periode</label>
+                                <div class="form-row gutters">
+                                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group">
+                                            <input type="date" class="form-control" value="{{ $start_date }}"
+                                                name="start_date">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group">
+                                            <input type="date" class="form-control" value="{{ $end_date }}"
+                                                name="end_date">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row gutters">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group">
+                                            <label for="">Urutan</label>
+                                            <select name="sort" class="form-control">
+                                                <option value="ASC" @if ($sort == 'ASC') selected @endif>A
+                                                    to Z
+                                                </option>
+                                                <option value="DESC" @if ($sort == 'DESC') selected @endif>Z
+                                                    to A
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary">Filter Data</button>
+                    <button type="submit" form="formFilter" class="btn btn-primary">Filter Data</button>
                 </div>
             </div>
         </div>

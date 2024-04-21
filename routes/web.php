@@ -501,6 +501,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/aset-kasi-create', 'create')->name('aset.kasi.kontrak-create');
             Route::post('/aset-kasi-store', 'store')->name('aset.kasi.kontrak-store');
             Route::get('/aset-kasi-kontrak/{uuid}/edit', 'edit')->name('aset.kasi.kontrak-edit');
+            Route::get('/aset-kontrak/filter', 'filter')->name('aset.kasi.kontrak.filter');
             Route::put('/aset-kasi-kontrak/{uuid}/update', 'update')->name('aset.kasi.kontrak-update');
             Route::delete('/aset-kasi-kontrak', 'destroy')->name('aset.kasi.kontrak-delete');
         });
@@ -515,6 +516,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/aset-gudang-utama/{uuid}/edit', 'kasi_edit')->name('aset.gudang-utama.edit');
             Route::put('/aset-gudang-utama/{uuid}/update', 'kasi_update')->name('aset.gudang-utama.update');
             Route::get('/aset-gudang-pulau', 'kasi_gudang_pulau')->name('aset.gudang-pulau');
+            Route::get('/aset-gudang-pulau/filter', 'kasi_gudang_pulau_filter')->name('aset.gudang-pulau.filter');
             Route::get('/aset-gudang-pulau-trans', 'kasi_gudang_pulau_trans')->name('aset.gudang-pulau-trans');
         });
 
@@ -533,6 +535,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/aset-pjlp-create-transaction', 'pjlp_form_pemakaian')->name('aset.pjlp.form-pemakaian');
             Route::post('/aset-pjlp-transaction', 'pjlp_store')->name('aset.pjlp.transaksi.store');
             Route::get('/aset-pjlp-my-transaction', 'pjlp_histori_transaksi')->name('aset.pjlp.my-transaction');
+            Route::get('/aset-pjlp-my-transaction/filter', 'pjlp_histori_transaksi_filter')->name('aset.pjlp.my-transaction.filter');
         });
     });
 
@@ -543,6 +546,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/aset-pengiriman-create', 'create_pengiriman')->name('aset.pengiriman.create');
             Route::post('/aset-pengiriman', 'store_pengiriman')->name('aset.pengiriman.store');
             Route::get('/aset-pengiriman/{no_resi}/detail', 'show_pengiriman')->name('aset.pengiriman.show');
+            Route::get('/aset-pengiriman/filter', 'filter_pengiriman')->name('aset.pengiriman.filter');
         });
 
         // KOORDINATOR

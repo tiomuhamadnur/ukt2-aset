@@ -52,7 +52,10 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">No.</th>
-                                    <th class="text-center">Pilih</th>
+                                    <th class="text-center">
+                                        Pilih <br>
+                                        <input type="checkbox" id="checkAll">
+                                    </th>
                                     <th class="text-center">Nama Barang</th>
                                     <th class="text-center">Qty.</th>
                                     <th class="text-center">Asal</th>
@@ -76,7 +79,8 @@
                                             <td class="text-center">{{ $loop->iteration }}</td>
                                             <td class="text-center">
                                                 @if ($item->photo_terima != null and $item->status == 'Dikirim')
-                                                    <input type="checkbox" name="ids[]" value="{{ $item->id }}">
+                                                    <input type="checkbox" class="barang-checkbox" name="ids[]"
+                                                        value="{{ $item->id }}">
                                                 @endif
                                             </td>
                                             <td class="text-center">{{ $item->barang->name }}</td>
@@ -85,7 +89,7 @@
                                             <td class="text-center">{{ $item->gudang->name }}</td>
                                             <td class="text-center text-wrap">{{ $item->submitter->name }}</td>
                                             <td class="text-center">
-                                                {{ $item->tanggal_kirim ?? '-' }}
+                                                {{ isset($item->tanggal_kirim) ? \Carbon\Carbon::parse($item->tanggal_kirim)->format('d-m-Y') : '-' }}
                                             </td>
                                             <td class="text-center">
                                                 <img src="{{ asset('storage/' . $item->photo_kirim) }}"
@@ -93,7 +97,7 @@
                                             </td>
                                             <td class="text-center text-wrap">{{ $item->receiver->name ?? '-' }}</td>
                                             <td class="text-center">
-                                                {{ $item->tanggal_terima ?? '-' }}
+                                                {{ isset($item->tanggal_terima) ? \Carbon\Carbon::parse($item->tanggal_terima)->format('d-m-Y') : '-' }}
                                             </td>
                                             <td class="text-center">
                                                 {{ $item->status }}
@@ -167,10 +171,17 @@
                         <div class="text-slate-500 mt-2">Semua barang yang dipilih, akan dikonfirmasi telah diterima di
                             gudang pulau tujuan.</div>
                     </div>
+                    <div class="p-2 mt-3 text-center">
+                        <div class="form-group">
+                            <label for="tanggal_terima_input">Tanggal Penerimaan</label>
+                            <input type="date" class="form-control" id="tanggal_terima_input" autocomplete="off">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" data-dismiss="modal" class="btn btn-dark w-24 mr-1 me-2">Batal</button>
-                    <button type="submit" form="formTerima" class="btn btn-primary w-24">Konfirmasi</button>
+                    <button type="submit" onclick="submitKonfirmasiPenerimaan()"
+                        class="btn btn-primary w-24">Konfirmasi</button>
                 </div>
             </div>
         </div>
@@ -244,6 +255,61 @@
 
 @section('javascript')
     <script>
+        $(document).ready(function() {
+            document.getElementById('checkAll').addEventListener('change', function() {
+                var checkboxes = document.querySelectorAll('.barang-checkbox');
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = this.checked;
+                }, this);
+            });
+
+            var checkboxes = document.querySelectorAll('.barang-checkbox');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    var allChecked = true;
+                    checkboxes.forEach(function(cb) {
+                        if (!cb.checked) {
+                            allChecked = false;
+                        }
+                    });
+                    document.getElementById('checkAll').checked = allChecked;
+                });
+            });
+
+            $('input[type="checkbox"]').change(function() {
+                var diceklis = $('input[type="checkbox"]:checked').length > 0;
+
+                if (diceklis) {
+                    $('#konfirmasiPenerimaanButton').show();
+                } else {
+                    $('#konfirmasiPenerimaanButton').hide();
+                }
+            });
+
+
+
+            function submitKonfirmasiPenerimaan() {
+                var tanggalTerimaValue = document.getElementById('tanggal_terima_input').value;
+                if (!tanggalTerimaValue) {
+                    alert('Tanggal penerimaan harus diisi!');
+                    return;
+                }
+                console.log(tanggalTerimaValue);
+
+                // Menambahkan input baru ke dalam form
+                var formTerima = document.getElementById('formTerima');
+                var inputTanggalTerima = document.createElement('input');
+                inputTanggalTerima.type = 'hidden';
+                inputTanggalTerima.name = 'tanggal_terima';
+                inputTanggalTerima.value = tanggalTerimaValue;
+                formTerima.appendChild(inputTanggalTerima);
+
+                // Mensubmit form
+                formTerima.submit();
+            }
+        });
+
+
         const imageInputs = document.querySelectorAll('.image-input');
         const previewContainer = document.querySelector('.preview-container');
 
@@ -288,17 +354,6 @@
             var url = $(e.relatedTarget).data('url');
 
             document.getElementById("formPhotoTerima").action = url;
-        });
-
-
-        $('input[type="checkbox"]').change(function() {
-            var diceklis = $('input[type="checkbox"]:checked').length > 0;
-
-            if (diceklis) {
-                $('#konfirmasiPenerimaanButton').show();
-            } else {
-                $('#konfirmasiPenerimaanButton').hide();
-            }
         });
     </script>
 @endsection

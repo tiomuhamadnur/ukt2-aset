@@ -34,27 +34,6 @@
                                     title="Reset Filter">
                                     <i class="fa fa-refresh"></i>
                                 </a>
-                                {{-- <div class="mr-2 mb-2 mb-sm-0 nav-item dropdown">
-                                    <button class="btn btn-primary mr-2 mb-2 mb-sm-0 text-white" href="#"
-                                        id="appsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false" title="Export">
-                                        <i class="fa fa-paper-plane"></i> Export
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dashboardsDropdown">
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:;" data-toggle="modal"
-                                                data-target="#modalDownloadExcel" title="Filter">
-                                                <i class="fa fa-file-excel text-primary"></i> Export Excel
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:;" data-toggle="modal"
-                                                data-target="#modalDownloadPDF">
-                                                <i class="fa fa-file-pdf text-danger"></i> Export PDF
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div> --}}
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -65,7 +44,15 @@
                             </form>
                         </div>
                     </div>
-                    {{-- PAGINASI BELUM --}}
+                    <div class="paginate-style">
+                        <div class="d-flex justify-content-center mb-2">
+                            <nav aria-label="Pagination">
+                                <ul class="pagination">
+                                    {{ $pengiriman_barang->links('vendor.pagination.bootstrap-4') }}
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="dataTable">
                             <thead>
@@ -86,7 +73,9 @@
                             <tbody>
                                 @foreach ($pengiriman_barang as $item)
                                     <tr>
-                                        <td class="text-center">{{ $loop->iteration }}</td>
+                                        <td class="text-center">
+                                            {{ ($pengiriman_barang->currentPage() - 1) * $pengiriman_barang->perPage() + $loop->index + 1 }}
+                                        </td>
                                         <td class="text-center">{{ $item->no_resi }}</td>
                                         <td class="text-center">Gudang Utama</td>
                                         <td class="text-center">{{ $item->gudang->name }}</td>
@@ -94,11 +83,11 @@
                                             ({{ $item->submitter->jabatan->name }})
                                         </td>
                                         <td class="text-center">
-                                            {{ $item->tanggal_kirim ?? '-' }}
+                                            {{ isset($item->tanggal_kirim) ? \Carbon\Carbon::parse($item->tanggal_kirim)->format('d-m-Y') : '-' }}
                                         </td>
                                         <td class="text-center text-wrap">{{ $item->receiver->name ?? '-' }}</td>
                                         <td class="text-center">
-                                            {{ $item->tanggal_terima ?? '-' }}
+                                            {{ isset($item->tanggal_terima) ? \Carbon\Carbon::parse($item->tanggal_terima)->format('d-m-Y') : '-' }}
                                         </td>
                                         <td class="text-center">
                                             {{ $item->catatan }}
@@ -139,8 +128,7 @@
                             @csrf
                             @method('delete')
                             <input type="text" name="id" id="id" hidden>
-                            <button type="button" data-dismiss="modal"
-                                class="btn btn-dark w-24 mr-1 me-2">Batal</button>
+                            <button type="button" data-dismiss="modal" class="btn btn-dark w-24 mr-1 me-2">Batal</button>
                             <button type="submit" class="btn btn-primary w-24">Buat BAST</button>
                         </form>
                     </div>
@@ -151,8 +139,7 @@
     {{-- END: BAST Moal --}}
 
     {{-- BEGIN: Filter Modal --}}
-    <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter"
-        aria-hidden="true">
+    <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -162,62 +149,71 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-row gutters">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label for="">Pulau</label>
-                                <select name="kontrak" class="form-control" required>
-                                    <option value="" selected disabled>- pilih pulau -</option>
-                                    @foreach ($pulau as $item)
-                                            <option value="{{ $item->id }}">
+                    <form action="{{ route('aset.pengiriman.filter') }}" id="formFilter" method="GET">
+                        @csrf
+                        @method('GET')
+                        <div class="form-row gutters">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group">
+                                    <label for="">Gudang Pulau</label>
+                                    <select name="gudang_id" class="form-control">
+                                        <option value="" selected disabled>- pilih gudang pulau -</option>
+                                        @foreach ($gudang_pulau as $item)
+                                            <option value="{{ $item->id }}"
+                                                @if ($item->id == $gudang_id) selected @endif>
                                                 {{ $item->name }}
                                             </option>
                                         @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="">Kontrak</label>
-                                <select name="kontrak" class="form-control" required>
-                                    <option value="" selected disabled>- pilih kontrak -</option>
-                                    @foreach ($kontrak as $item)
-                                            <option value="{{ $item->id }}">{{ $item->no_kontrak }}
-                                                - {{ $item->name }}
-                                                - {{ $item->seksi->name }} - ({{ $item->tanggal }})
-                                            </option>
-                                        @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="">Status</label>
-                                <select name="jenis_barang" class="form-control" required>
-                                    <option value="" selected disabled>- pilih status barang -</option>
-                                    <option value="consumable">Diproses</option>
-                                    <option value="tools">Diterima</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Status</label>
+                                    <select name="status" class="form-control">
+                                        <option value="" selected disabled>- pilih status barang -</option>
+                                        <option value="Dikirim" @if ($status == 'Dikirim') selected @endif>Dikirim
+                                        </option>
+                                        <option value="Diterima" @if ($status == 'Diterima') selected @endif>Diterima
+                                        </option>
 
-                                </select>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="periode">Periode Pengiriman</label>
+                        <div class="form-group">
+                            <label for="periode">Periode Pengiriman</label>
+                            <div class="form-row gutters">
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="date" class="form-control" value="{{ $start_date ?? '' }}"
+                                            name="start_date">
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="date" class="form-control" value="{{ $end_date ?? '' }}"
+                                            name="end_date">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-row gutters">
-                            <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="form-group">
-                                    <input type="date" class="form-control" id="start" placeholder="start">
-                                </div>
-                            </div>
-                            <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="form-group">
-                                    <input type="date" class="form-control" id="end" placeholder="end">
+                                    <label for="">Urutan</label>
+                                    <select name="sort" class="form-control">
+                                        <option value="ASC" @if ($sort == 'ASC') selected @endif>A to Z
+                                        </option>
+                                        <option value="DESC" @if ($sort == 'DESC') selected @endif>Z to A
+                                        </option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary">Filter Data</button>
+                    <button type="submit" form="formFilter" class="btn btn-primary">Filter Data</button>
                 </div>
             </div>
         </div>

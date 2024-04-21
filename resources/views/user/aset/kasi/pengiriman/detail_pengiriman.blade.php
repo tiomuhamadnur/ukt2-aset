@@ -78,7 +78,7 @@
                                             <td class="text-center">{{ $item->gudang->name }}</td>
                                             <td class="text-center text-wrap">{{ $item->submitter->name }}</td>
                                             <td class="text-center">
-                                                {{ $item->tanggal_kirim ?? '-' }}
+                                                {{ isset($item->tanggal_kirim) ? \Carbon\Carbon::parse($item->tanggal_kirim)->format('d-m-Y') : '-' }}
                                             </td>
                                             <td class="text-center">
                                                 <img src="{{ asset('storage/' . $item->photo_kirim) }}"
@@ -86,7 +86,7 @@
                                             </td>
                                             <td class="text-center text-wrap">{{ $item->receiver->name ?? '-' }}</td>
                                             <td class="text-center">
-                                                {{ $item->tanggal_terima ?? '-' }}
+                                                {{ isset($item->tanggal_terima) ? \Carbon\Carbon::parse($item->tanggal_terima)->format('d-m-Y') : '-' }}
                                             </td>
                                             <td class="text-center">
                                                 <span

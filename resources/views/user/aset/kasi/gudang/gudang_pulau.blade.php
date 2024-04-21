@@ -20,19 +20,23 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="d-flex justify-content-center mb-3 text-center" style="text-decoration: underline">List Barang
-                        Gudang Pulau - Seksi {{ auth()->user()->struktur->seksi->name ?? '-' }}</h4>
+                    <h4 class="d-flex justify-content-center mb-3 text-center" style="text-decoration: underline">Daftar Stock
+                        Barang Gudang Pulau - Seksi {{ auth()->user()->struktur->seksi->name ?? '-' }}</h4>
                     <div class="row d-flex justify-content-between align-items-center">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-3 text-left">
                             <div class="d-flex justify-content-start align-items-center flex-wrap">
                                 <a href="{{ route('aset.kasi.index') }}"
                                     class="btn btn-outline-primary mr-2 mb-2 mb-sm-0"><i class="fa fa-arrow-left"></i>
                                     Kembali</a>
-                                <a href="{{ route('aset.gudang-pulau-trans') }}"
+                                {{-- <a href="{{ route('aset.gudang-pulau-trans') }}"
                                     class="btn btn-primary mr-2 mb-2 mb-sm-0"></i>
-                                    Lihat Histori Pemakaian</a>
+                                    Lihat Histori Pemakaian</a> --}}
                                 <a href="" class="btn btn-primary mr-2 mb-2 mb-sm-0" data-toggle="modal"
-                                    data-target="#modalFilter"><i class="fa fa-filter"></i></a>
+                                    data-target="#modalFilter"><i class="fa fa-filter"></i> - pilih gudang pulau -</a>
+                                <a href="{{ route('aset.gudang-pulau') }}" class="btn btn-primary mr-2 mb-2 mb-sm-0"
+                                    title="Reset Filter">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -70,7 +74,8 @@
                                         <td class="text-center">{{ $item->barang->merk ?? '-' }}</td>
                                         <td class="text-center">{{ $item->barang->jenis ?? '-' }}</td>
                                         <td class="text-center">{{ $item->stock_awal }} {{ $item->barang->satuan }}</td>
-                                        <td class="text-center">{{ $item->stock_aktual }} {{ $item->barang->satuan }}</td>
+                                        <td class="text-center font-weight-bold">{{ $item->stock_aktual }}
+                                            {{ $item->barang->satuan }}</td>
                                         <td class="text-center">
                                             @if ($item->stock_aktual == 0)
                                                 <span class="btn btn-danger">Habis</span>
@@ -83,9 +88,7 @@
                                 @if ($barang_pulau->count() == 0)
                                     <tr>
                                         <td class="text-center" colspan="10">
-                                            Data barang tidak ditemukan, kemungkinan stock barang sudah habis silahkan
-                                            hubungi
-                                            PIC terkait.
+                                            Tidak ada data yang bisa ditampilkan.
                                         </td>
                                     </tr>
                                 @endif
@@ -127,12 +130,12 @@
     {{-- BEGIN: Filter Modal --}}
     <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter" aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form action="{{ route('barang.filter') }}" method="GET">
+            <form action="{{ route('aset.gudang-pulau.filter') }}" method="GET">
                 @csrf
                 @method('GET')
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Filter Data Barang</h5>
+                        <h5 class="modal-title">Filter Data Stock Barang</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -141,48 +144,60 @@
                         <div class="form-row gutters">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="form-group">
-                                    <label for="">Ketersediaan Barang</label>
-                                    <select name="gudang_id" class="form-control">
-                                        <option value="" selected disabled>- pilih ketersediaan -</option>
-                                        <option value="">Ada</option>
-                                        <option value="">Habis</option>
+                                    <label for="">Gudang Pulau</label>
+                                    <select name="gudang_id" class="form-control" required>
+                                        <option value="" selected disabled>- pilih gudang pulau -</option>
+                                        @foreach ($gudang_pulau as $item)
+                                            <option value="{{ $item->id }}"
+                                                @if ($item->id == $gudang_id) selected @endif>{{ $item->name }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="">Gudang</label>
-                                    <select name="gudang_id" class="form-control">
-                                        <option value="" selected disabled>- pilih gudang -</option>
+                                    <label for="">Ketersediaan Barang</label>
+                                    <select name="stock" class="form-control">
+                                        <option value="" selected disabled>- pilih ketersediaan -</option>
+                                        <option value=">" @if ($stock == '>')
+                                            selected
+                                            @endif>Ada</option>
+                                        <option value="=" @if ($stock == '=') selected @endif>Habis
+                                        </option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="">Kontrak</label>
                                     <select name="kontrak_id" class="form-control">
                                         <option value="" selected disabled>- pilih kontrak -</option>
-                                        {{-- @foreach ($kontrak as $item)
-                                            <option value="{{ $item->id }}">{{ $item->no_kontrak }}
+                                        @foreach ($kontrak as $item)
+                                            <option value="{{ $item->id }}"
+                                                @if ($item->id == $kontrak_id) selected @endif>{{ $item->no_kontrak }}
                                                 - {{ $item->name }}
-                                                - {{ $item->seksi->name }} - ({{ $item->tanggal }})
+                                                - {{ $item->seksi->name }} -
+                                                ({{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }})
                                             </option>
-                                        @endforeach --}}
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="periode">Tahun Pengadaan</label>
-                                    {{-- <select name="periode" class="form-control">
+                                    <select name="periode" class="form-control">
                                         <option value="" selected disabled>- pilih periode pengadaan -</option>
                                         <option value="{{ $tahun - 3 }}">{{ $tahun - 3 }}</option>
                                         <option value="{{ $tahun - 2 }}">{{ $tahun - 2 }}</option>
                                         <option value="{{ $tahun - 1 }}">{{ $tahun - 1 }}</option>
                                         <option value="{{ $tahun }}">{{ $tahun }}</option>
                                         <option value="{{ $tahun + 1 }}">{{ $tahun + 1 }}</option>
-                                    </select> --}}
+                                    </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="">Jenis Barang</label>
                                     <select name="jenis" class="form-control">
                                         <option value="" selected disabled>- pilih jenis barang -</option>
-                                        <option value="consumable">Consumable</option>
-                                        <option value="tools">Tools</option>
+                                        <option value="consumable" @if ($jenis == 'consumable') selected @endif>
+                                            Consumable</option>
+                                        <option value="tools" @if ($jenis == 'tools') selected @endif>Tools
+                                        </option>
 
                                     </select>
                                 </div>

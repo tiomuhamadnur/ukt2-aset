@@ -140,15 +140,88 @@ class GudangBarangController extends Controller
         return redirect()->route('aset.gudang-utama')->withNotify('Data berhasil diubah!');
     }
 
-    public function kasi_gudang_pulau()
+    public function kasi_gudang_pulau(Request $request)
     {
+        $gudang_id = '';
+        $kontrak_id = '';
+        $stock = '';
+        $jenis = '';
+        $tahun = Carbon::now()->year;
+
         $seksi_id = auth()->user()->struktur->seksi->id;
-        $barang_pulau = BarangPulau::whereRelation('barang.kontrak.seksi', 'id', '=', $seksi_id)
-                        ->orderBy('gudang_id')
-                        ->get();
-        return view('user.aset.kasi.gudang.gudang_pulau', compact([
-            'barang_pulau',
-        ]));
+        $gudang_pulau = Gudang::orderBy('name', 'ASC')->get();
+        $kontrak = Kontrak::where('seksi_id', $seksi_id)->orderBy('tanggal', 'ASC')->get();
+
+        $barang_pulau = BarangPulau::where('id', 'xxx')->get();
+
+        return view('user.aset.kasi.gudang.gudang_pulau', [
+            'barang_pulau' => $barang_pulau,
+            'gudang_pulau' => $gudang_pulau,
+            'kontrak' => $kontrak,
+            'tahun' => $tahun,
+            'jenis' => $jenis,
+            'stock' => $stock,
+            'kontrak_id' => $kontrak_id,
+            'gudang_id' => $gudang_id,
+        ]);
+    }
+
+    public function kasi_gudang_pulau_filter(Request $request)
+    {
+        $gudang_id = $request->gudang_id;
+        $kontrak_id = $request->kontrak_id;
+        $stock = $request->stock;
+        $jenis = $request->jenis;
+        $tahun = $request->periode ?? Carbon::now()->year;
+
+        $seksi_id = auth()->user()->struktur->seksi->id;
+        $gudang_pulau = Gudang::orderBy('name', 'ASC')->get();
+        $kontrak = Kontrak::where('seksi_id', $seksi_id)->orderBy('tanggal', 'ASC')->get();
+
+        $barang_pulau = BarangPulau::query();
+
+        // Filter by seksi_id
+        $barang_pulau->whereRelation('barang.kontrak.seksi', 'id', '=', $seksi_id);
+
+        // Filter by gudang_id
+        $barang_pulau->when($gudang_id, function ($query) use ($request) {
+            return $query->where('gudang_id', $request->gudang_id);
+        });
+
+        // Filter by stock
+        $barang_pulau->when($stock, function ($query) use ($request) {
+            return $query->where('stock_aktual', $request->stock, 0);
+        });
+
+        // Filter by kontrak_id
+        $barang_pulau->when($kontrak_id, function ($query) use ($request) {
+            return $query->whereRelation('barang.kontrak', 'id', '=', $request->kontrak_id);
+        });
+
+        // Filter by jenis
+        $barang_pulau->when($jenis, function ($query) use ($request) {
+            return $query->whereRelation('barang', 'jenis', '=', $request->jenis);
+        });
+
+        // Filter by periode
+        $barang_pulau->when($tahun, function ($query) use ($tahun) {
+            return $query->whereHas('barang.kontrak', function ($query) use ($tahun) {
+                $query->whereYear('tanggal', $tahun);
+            });
+        });
+
+        $barang_pulau = $barang_pulau->orderBy('barang_id', 'ASC')->orderBy('tanggal_terima', 'ASC')->get();
+
+        return view('user.aset.kasi.gudang.gudang_pulau', [
+            'barang_pulau' => $barang_pulau,
+            'gudang_pulau' => $gudang_pulau,
+            'kontrak' => $kontrak,
+            'tahun' => $tahun,
+            'jenis' => $jenis,
+            'stock' => $stock,
+            'kontrak_id' => $kontrak_id,
+            'gudang_id' => $gudang_id,
+        ]);
     }
 
     public function kasi_gudang_pulau_trans()
@@ -394,23 +467,63 @@ class GudangBarangController extends Controller
         return redirect()->route('aset.pjlp.my-gudang')->withNotify('Data transaksi berhasil disimpan!');
     }
 
-    public function pjlp_histori_transaksi()
+    public function pjlp_histori_transaksi(Request $request)
     {
         $user_id = auth()->user()->id;
-        $seksi_id = auth()->user()->struktur->seksi->id;
-        $sort = 'DESC';
+        $sort = $request->sort ?? 'DESC';
+        $perPage = $request->perPage ?? 50;
+
         $transaksi = TransaksiBarangPulau::where('user_id', $user_id)
                     ->orderBy('tanggal', $sort)
-                    ->get();
+                    ->paginate($perPage);
 
-        $kontrak = Kontrak::where('seksi_id', $seksi_id)->get();
-        $tahun = Carbon::now()->format('Y');
+        $jenis = '';
+        $start_date = '';
+        $end_date = '';
 
-        return view('user.aset.pjlp.gudang.my_transaksi', compact([
-            'transaksi',
-            'sort',
-            'kontrak',
-            'tahun'
-        ]));
+        return view('user.aset.pjlp.gudang.my_transaksi', [
+            'transaksi' => $transaksi,
+            'sort' => $sort,
+            'jenis' => $jenis,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+        ]);
+    }
+
+    public function pjlp_histori_transaksi_filter(Request $request)
+    {
+        $user_id = auth()->user()->id;
+        $sort = $request->sort ?? 'DESC';
+        $jenis = $request->jenis;
+        $start_date = $request->start_date;
+        $end_date = $request->end_date ?? $start_date;
+
+        $transaksi = TransaksiBarangPulau::query();
+
+        // Filter user_id
+        $transaksi->where('user_id', $user_id);
+
+        // Filter by jenis
+        $transaksi->when($jenis, function ($query) use ($request) {
+            return $query->whereRelation('barang_pulau.barang', 'jenis', '=', $request->jenis);
+        });
+
+        // Filter by tanggal
+        if ($start_date != null and $end_date != null) {
+            $transaksi->whereBetween('tanggal', [$start_date, $end_date]);
+        }
+
+        // Order By
+        $transaksi = $transaksi->orderBy('tanggal', $sort)
+                            ->orderBy('created_at', $sort)
+                            ->paginate();
+
+        return view('user.aset.pjlp.gudang.my_transaksi', [
+            'transaksi' => $transaksi,
+            'sort' => $sort,
+            'jenis' => $jenis,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+        ]);
     }
 }

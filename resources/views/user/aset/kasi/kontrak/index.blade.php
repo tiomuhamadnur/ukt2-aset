@@ -38,27 +38,6 @@
                                     title="Reset Filter">
                                     <i class="fa fa-refresh"></i>
                                 </a>
-                                {{-- <div class="mr-2 mb-2 mb-sm-0 nav-item dropdown">
-                                    <button class="btn btn-primary mr-2 mb-2 mb-sm-0 text-white" href="#"
-                                        id="appsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false" title="Export">
-                                        <i class="fa fa-paper-plane"></i> Export
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dashboardsDropdown">
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:;" data-toggle="modal"
-                                                data-target="#modalDownloadExcel" title="Filter">
-                                                <i class="fa fa-file-excel text-primary"></i> Export Excel
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:;" data-toggle="modal"
-                                                data-target="#modalDownloadPDF">
-                                                <i class="fa fa-file-pdf text-danger"></i> Export PDF
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div> --}}
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -69,7 +48,15 @@
                             </form>
                         </div>
                     </div>
-                    {{-- PAGINASI BELUM --}}
+                    <div class="paginate-style">
+                        <div class="d-flex justify-content-center mb-2">
+                            <nav aria-label="Pagination">
+                                <ul class="pagination">
+                                    {{ $kontrak->links('vendor.pagination.bootstrap-4') }}
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <div class="table-responsive mt-2">
                             <table class="table table-bordered table-striped" id="dataTable">
@@ -88,7 +75,9 @@
                                 <tbody>
                                     @foreach ($kontrak as $item)
                                         <tr>
-                                            <td class="text-center">{{ $loop->iteration }}</td>
+                                            <td class="text-center">
+                                                {{ ($kontrak->currentPage() - 1) * $kontrak->perPage() + $loop->index + 1 }}
+                                            </td>
                                             <td class="text-center">{{ $item->name }}</td>
                                             <td class="text-center">{{ $item->no_kontrak }}</td>
                                             <td class="text-center">{{ formatRupiah($item->nilai_kontrak, true) }}</td>
@@ -131,8 +120,7 @@
 
 
     {{-- START: FILTER --}}
-    <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter"
-        aria-hidden="true">
+    <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -142,7 +130,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="formFilter" action="#" method="GET">
+                    <form id="formFilter" action="{{ route('aset.kasi.kontrak.filter') }}" method="GET">
                         @csrf
                         @method('GET')
                         <div class="form-group">

@@ -42,30 +42,8 @@
                                     title="Reset Filter">
                                     <i class="fa fa-refresh"></i>
                                 </a>
-                                {{-- <div class="mr-2 mb-2 mb-sm-0 nav-item dropdown">
-                                    <button class="btn btn-primary mr-2 mb-2 mb-sm-0 nav-link text-white" href="#"
-                                        id="appsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false" title="Export">
-                                        <i class="fa fa-paper-plane"></i> Export
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dashboardsDropdown">
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:;" data-toggle="modal"
-                                                data-target="#modalDownloadExcel" title="Filter">
-                                                <i class="fa fa-file-excel text-primary"></i> Export Excel
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:;" data-toggle="modal"
-                                                data-target="#modalDownloadPDF">
-                                                <i class="fa fa-file-pdf text-danger"></i> Export PDF
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div> --}}
                             </div>
                         </div>
-                        {{-- PAGINASI --}}
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                             <form class="form-inline mb-2 d-flex justify-content-end">
                                 <input class="form-control mr-sm-2" type="search" placeholder="Cari sesuatu di sini..."
@@ -84,7 +62,10 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">No.</th>
-                                    <th class="text-center">Pilih</th>
+                                    <th class="text-center">
+                                        Pilih <br>
+                                        <input type="checkbox" id="checkAll">
+                                    </th>
                                     <th class="text-center">Tanggal</th>
                                     <th class="text-center">No. Kontrak</th>
                                     <th class="text-center">Seksi</th>
@@ -110,7 +91,7 @@
                                             <td class="text-center checkbox">
                                                 @if ($item->photo != null)
                                                     @if ($item->stock_aktual > 0)
-                                                        <input type="checkbox" name="barang_id[]"
+                                                        <input type="checkbox" class="barang-checkbox" name="barang_id[]"
                                                             value="{{ $item->id }}">
                                                     @endif
                                                 @endif
@@ -139,8 +120,8 @@
                                                     </a>
                                                 @endif
                                                 @if ($item->photo == null)
-                                                    <a href="#" href="javascript:;" title="Hapus"
-                                                        data-toggle="modal" data-target="#delete-confirmation-modal"
+                                                    <a href="#" href="javascript:;" title="Hapus" data-toggle="modal"
+                                                        data-target="#delete-confirmation-modal"
                                                         onclick="toggleModal('{{ $item->id }}')"
                                                         class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
                                                 @endif
@@ -285,101 +266,6 @@
         </div>
     </div>
     {{-- END: Filter Modal --}}
-
-
-    {{-- BEGIN: Kirim Barang Modal --}}
-    <div class="modal fade" id="modalKirimBarang" tabindex="-1" role="dialog" aria-labelledby="modalKirimBarang"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Form Kirim Barang</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    {{-- <div class="form-row gutters">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label for="">Gudang Tujuan</label>
-                                <select name="pulau" class="form-control" required>
-                                    <option value="" selected disabled>- pilih gudang pengiriman -</option>
-                                    @foreach ($gudang_tujuan as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row gutters">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label for="">Nama Barang</label>
-                                <input type="text" class="form-control"
-                                    placeholder="Masukkan Jumlah Barang yang akan dikirim" value="Semen Tiga Roda"
-                                    disabled>
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label for="">Jumlah Barang</label>
-                                <input type="text" class="form-control"
-                                    placeholder="Masukkan Jumlah Barang yang akan dikirim">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row gutters">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label for="">Nama Barang</label>
-                                <input type="text" class="form-control"
-                                    placeholder="Masukkan Jumlah Barang yang akan dikirim" value="Pake Keling" disabled>
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label for="">Jumlah Barang</label>
-                                <input type="text" class="form-control"
-                                    placeholder="Masukkan Jumlah Barang yang akan dikirim">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row gutters">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label for="">Nama Barang</label>
-                                <input type="text" class="form-control"
-                                    placeholder="Masukkan Jumlah Barang yang akan dikirim" value="Cat Putih Dulux"
-                                    disabled>
-                            </div>
-                        </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label for="">Jumlah Barang</label>
-                                <input type="text" class="form-control"
-                                    placeholder="Masukkan Jumlah Barang yang akan dikirim">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-row gutters">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label for="">Catatan</label>
-                                <input type="text" class="form-control" name="" id="">
-                            </div>
-                        </div>
-                    </div> --}}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Kirim Barang</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{-- END: Kirim Barang Modal --}}
 @endsection
 
 
@@ -399,6 +285,30 @@
                     $('#kirimBarangButton').hide();
                 }
             });
+
+
+            document.getElementById('checkAll').addEventListener('change', function() {
+                var checkboxes = document.querySelectorAll('.barang-checkbox');
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = this.checked;
+                }, this);
+            });
+
+            var checkboxes = document.querySelectorAll('.barang-checkbox');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    var allChecked = true;
+                    checkboxes.forEach(function(cb) {
+                        if (!cb.checked) {
+                            allChecked = false;
+                        }
+                    });
+                    document.getElementById('checkAll').checked = allChecked;
+                });
+            });
+
+
+
 
             $('#modalLampiran').on('show.bs.modal', function(e) {
                 var photoArray = $(e.relatedTarget).data('photo');

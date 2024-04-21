@@ -38,8 +38,8 @@
                                         id="ambilBarangButton" style="display: none;"> <i class="fa fa-hand"></i> Ambil
                                         Barang
                                     </button></a>
-                                <a href="" class="btn btn-primary mr-2 mb-2 mb-sm-0" data-toggle="modal"
-                                    data-target="#modalFilter"><i class="fa fa-filter"></i></a>
+                                {{-- <a href="" class="btn btn-primary mr-2 mb-2 mb-sm-0" data-toggle="modal"
+                                    data-target="#modalFilter"><i class="fa fa-filter"></i></a> --}}
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -50,13 +50,15 @@
                             </form>
                         </div>
                     </div>
-                    {{-- PAGINASI BELUM --}}
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="dataTable">
                             <thead>
                                 <tr>
                                     <th class="text-center">No.</th>
-                                    <th class="text-center">Pilih</th>
+                                    <th class="text-center">
+                                        Pilih <br>
+                                        <input type="checkbox" id="checkAll">
+                                    </th>
                                     <th class="text-center">Nama Barang</th>
                                     <th class="text-center">Jenis Barang</th>
                                     <th class="text-center">Tahun Pengadaan</th>
@@ -75,7 +77,8 @@
                                         <tr>
                                             <td class="text-center">{{ $loop->iteration }}</td>
                                             <td class="text-center">
-                                                <input type="checkbox" name="barang_pulau_id[]" value="{{ $item->id }}">
+                                                <input type="checkbox" class="barang-checkbox" name="barang_pulau_id[]"
+                                                    value="{{ $item->id }}">
                                             </td>
                                             <td class="text-center font-weight-bold">{{ $item->barang->name }}</td>
                                             <td class="text-center">{{ $item->barang->jenis }}</td>
@@ -208,6 +211,26 @@
                 } else {
                     $('#ambilBarangButton').hide();
                 }
+            });
+
+            document.getElementById('checkAll').addEventListener('change', function() {
+                var checkboxes = document.querySelectorAll('.barang-checkbox');
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = this.checked;
+                }, this);
+            });
+
+            var checkboxes = document.querySelectorAll('.barang-checkbox');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    var allChecked = true;
+                    checkboxes.forEach(function(cb) {
+                        if (!cb.checked) {
+                            allChecked = false;
+                        }
+                    });
+                    document.getElementById('checkAll').checked = allChecked;
+                });
             });
 
             $('#modalLampiran').on('show.bs.modal', function(e) {

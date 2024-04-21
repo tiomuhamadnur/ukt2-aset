@@ -38,7 +38,7 @@
                         </div>
                         <div class="form-group">
                             <label>Tanggal Pengambilan</label>
-                            <input type="text" placeholder="Tanggal Pengambilan" onfocus="(this.type='datetime-local')"
+                            <input type="text" placeholder="Tanggal Pengambilan" onfocus="(this.type='date')"
                                 onblur="(this.type='text')" class="form-control" name="tanggal" required>
                         </div>
                         <div class="form-group">
