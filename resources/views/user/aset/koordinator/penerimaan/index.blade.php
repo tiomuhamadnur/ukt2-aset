@@ -21,8 +21,8 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="d-flex justify-content-center mb-3 text-center" style="text-decoration: underline">Data
-                        Penerimaan Barang - Seksi {{ auth()->user()->struktur->seksi->name ?? '-' }} - Pulau
-                        {{ auth()->user()->area->pulau->name ?? '-' }}
+                        Penerimaan Barang - Seksi {{ auth()->user()->struktur->seksi->name ?? '-' }} -
+                        Pulau {{ $nama_pulau ?? '' }}
                     </h4>
                     <div class="row d-flex justify-content-between align-items-center">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-3 text-left">
@@ -30,6 +30,25 @@
                                 <a href="{{ route('aset.koordinator.index') }}"
                                     class="btn btn-outline-primary mr-2 mb-2 mb-sm-0"><i class="fa fa-arrow-left"></i>
                                     Kembali</a>
+                                <a href="{{ route('aset.penerimaan.index') }}" class="btn btn-primary mr-2 mb-2 mb-sm-0"
+                                    title="Reset Filter">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
+                                <div class="form-group  mr-2 mb-2 mb-sm-0">
+                                    <form id="formSelect" action="{{ route('aset.penerimaan.index') }}" method="GET">
+                                        @csrf
+                                        @method('GET')
+                                        <select name="pulau_id" id="pulau_id" class="form-control">
+                                            <option value="" disabled selected>- pilih pulau -</option>
+                                            @foreach ($pulau as $item)
+                                                <option value="{{ $item->id }}"
+                                                    @if ($item->id == $pulau_id) selected @endif>Pulau
+                                                    {{ $item->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -206,14 +225,8 @@
 @section('javascript')
     <script>
         $(document).ready(function() {
-            $('input[type="checkbox"]').change(function() {
-                var diceklis = $('input[type="checkbox"]:checked').length > 0;
-
-                if (diceklis) {
-                    $('#terimaBarangButton').show();
-                } else {
-                    $('#terimaBarangButton').hide();
-                }
+            document.getElementById('pulau_id').addEventListener('change', function() {
+                document.getElementById('formSelect').submit();
             });
         });
     </script>

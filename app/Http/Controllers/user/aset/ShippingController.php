@@ -236,11 +236,20 @@ class ShippingController extends Controller
 
 
     // KOORDINATOR
-    public function index_penerimaan()
+    public function index_penerimaan(Request $request)
     {
-        $this_year = Carbon::now()->format('Y');
-        $pulau_id = auth()->user()->area->pulau->id;
+        $pulau_id = $request->pulau_id;
+        $this_year = Carbon::now()->year;
+        $user_id = auth()->user()->id;
+        $pulau_ids = FormasiTim::where('periode', $this_year)
+                            ->where('koordinator_id', $user_id)
+                            ->join('area', 'formasi_tim.area_id', '=', 'area.id')
+                            ->pluck('area.pulau_id')
+                            ->toArray();
+        $pulau = Pulau::whereIn('id', $pulau_ids)->get();
         $seksi_id = auth()->user()->struktur->seksi->id;
+        $nama_pulau = Pulau::find($pulau_id)->name ?? '#';
+
         $penerimaan_barang = PengirimanBarang::select(
                             'no_resi',
                             'submitter_id',
@@ -256,7 +265,12 @@ class ShippingController extends Controller
                             ->orderBy('tanggal_kirim', 'DESC')
                             ->get();
 
-            return view('user.aset.koordinator.penerimaan.index', compact(['penerimaan_barang']));
+            return view('user.aset.koordinator.penerimaan.index', compact([
+                'penerimaan_barang',
+                'nama_pulau',
+                'pulau',
+                'pulau_id',
+            ]));
     }
 
     public function show_penerimaan($no_resi)
