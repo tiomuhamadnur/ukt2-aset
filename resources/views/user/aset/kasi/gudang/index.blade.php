@@ -64,7 +64,9 @@
                                     <th class="text-center">No.</th>
                                     <th class="text-center">
                                         Pilih <br>
-                                        <input type="checkbox" id="checkAll">
+                                        @if ($validasiKirimBarangCheckbox > 0)
+                                            <input type="checkbox" class="barang-checkbox" id="checkAll">
+                                        @endif
                                     </th>
                                     <th class="text-center">Tanggal</th>
                                     <th class="text-center">No. Kontrak</th>
@@ -309,17 +311,6 @@
         }
 
         $(document).ready(function() {
-            $('input[type="checkbox"]').change(function() {
-                var diceklis = $('input[type="checkbox"]:checked').length > 0;
-
-                if (diceklis) {
-                    $('#kirimBarangButton').show();
-                } else {
-                    $('#kirimBarangButton').hide();
-                }
-            });
-
-
             document.getElementById('checkAll').addEventListener('change', function() {
                 var checkboxes = document.querySelectorAll('.barang-checkbox');
                 checkboxes.forEach(function(checkbox) {
@@ -338,6 +329,16 @@
                     });
                     document.getElementById('checkAll').checked = allChecked;
                 });
+            });
+
+            $('input[type="checkbox"]').change(function() {
+                var diceklis = $('input[type="checkbox"]:checked').length > 0;
+
+                if (diceklis) {
+                    $('#kirimBarangButton').show();
+                } else {
+                    $('#kirimBarangButton').hide();
+                }
             });
 
 

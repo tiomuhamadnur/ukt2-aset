@@ -263,8 +263,14 @@ class ShippingController extends Controller
     {
         $pengiriman_barang = PengirimanBarang::where('no_resi', $no_resi)->get();
         $validasiBAST = PengirimanBarang::where('no_resi', $no_resi)->where('status', 'Dikirim')->count();
+        $validasiCheckbox = PengirimanBarang::where('no_resi', $no_resi)->where('status', 'Dikirim')->where('photo_terima', '!=', null)->count();
         $nomor_resi = $no_resi;
-        return view('user.aset.koordinator.penerimaan.detail_penerimaan', compact(['pengiriman_barang', 'validasiBAST', 'nomor_resi']));
+        return view('user.aset.koordinator.penerimaan.detail_penerimaan', compact([
+            'pengiriman_barang',
+            'validasiBAST',
+            'validasiCheckbox',
+            'nomor_resi',
+        ]));
     }
 
     public function terima_barang(Request $request)

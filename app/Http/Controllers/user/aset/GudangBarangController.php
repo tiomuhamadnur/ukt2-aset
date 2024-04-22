@@ -39,6 +39,10 @@ class GudangBarangController extends Controller
         $kontrak_id = '';
         $stock = '';
 
+        $validasiKirimBarangCheckbox = Barang::where('stock_aktual', '>', 0)
+                                        ->whereRelation('kontrak.seksi', 'id', '=', $seksi_id)
+                                        ->count();
+
         return view('user.aset.kasi.gudang.index', [
             'barang' => $barang,
             'gudang_tujuan' => $gudang_tujuan,
@@ -48,6 +52,7 @@ class GudangBarangController extends Controller
             'stock' => $stock,
             'sort' => $sort,
             'kontrak_id' => $kontrak_id,
+            'validasiKirimBarangCheckbox' => $validasiKirimBarangCheckbox,
         ]);
     }
 

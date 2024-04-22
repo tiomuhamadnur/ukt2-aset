@@ -56,7 +56,8 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center" style="width: 5%">No</th>
-                                            <th class="text-center">Nama Barang</th>
+                                            <th class="text-center text-wrap">Nama Barang</th>
+                                            <th class="text-center text-wrap">Spesifikasi</th>
                                             <th class="text-center text-wrap">Stock Tersedia</th>
                                             <th class="text-center">Qty. Barang</th>
                                             <th class="text-center">Photo Bukti Kirim</th>
@@ -66,11 +67,12 @@
                                         @foreach ($barang as $item)
                                             <tr>
                                                 <td class="text-center">{{ $loop->iteration }}</td>
-                                                <td class="font-weight-bolder">
+                                                <td class="font-weight-bolder text-wrap">
                                                     {{ $item->name }}
                                                     <input type="text" name="barang_id[]" value="{{ $item->id }}"
                                                         hidden>
                                                 </td>
+                                                <td class="text-center text-wrap">{{ $item->spesifikasi }}</td>
                                                 <td class="text-center">{{ $item->stock_aktual }} {{ $item->satuan }}</td>
                                                 <td class="text-center">
                                                     <input type="number" name="qty[]" class="form-control" min="1"

@@ -54,7 +54,9 @@
                                     <th class="text-center">No.</th>
                                     <th class="text-center">
                                         Pilih <br>
-                                        <input type="checkbox" id="checkAll">
+                                        @if ($validasiCheckbox > 0)
+                                            <input type="checkbox" id="checkAll">
+                                        @endif
                                     </th>
                                     <th class="text-center">Nama Barang</th>
                                     <th class="text-center">Qty.</th>
