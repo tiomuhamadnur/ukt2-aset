@@ -285,28 +285,6 @@
                     $('#konfirmasiPenerimaanButton').hide();
                 }
             });
-
-
-
-            function submitKonfirmasiPenerimaan() {
-                var tanggalTerimaValue = document.getElementById('tanggal_terima_input').value;
-                if (!tanggalTerimaValue) {
-                    alert('Tanggal penerimaan harus diisi!');
-                    return;
-                }
-                console.log(tanggalTerimaValue);
-
-                // Menambahkan input baru ke dalam form
-                var formTerima = document.getElementById('formTerima');
-                var inputTanggalTerima = document.createElement('input');
-                inputTanggalTerima.type = 'hidden';
-                inputTanggalTerima.name = 'tanggal_terima';
-                inputTanggalTerima.value = tanggalTerimaValue;
-                formTerima.appendChild(inputTanggalTerima);
-
-                // Mensubmit form
-                formTerima.submit();
-            }
         });
 
 
@@ -355,5 +333,24 @@
 
             document.getElementById("formPhotoTerima").action = url;
         });
+
+        function submitKonfirmasiPenerimaan() {
+            var tanggalTerimaValue = document.getElementById('tanggal_terima_input').value;
+            if (!tanggalTerimaValue) {
+                alert('Tanggal penerimaan harus diisi!');
+                return;
+            }
+
+            // Menambahkan input baru ke dalam form
+            var formTerima = document.getElementById('formTerima');
+            var inputTanggalTerima = document.createElement('input');
+            inputTanggalTerima.type = 'hidden';
+            inputTanggalTerima.name = 'tanggal_terima';
+            inputTanggalTerima.value = tanggalTerimaValue;
+            formTerima.appendChild(inputTanggalTerima);
+
+            // Mensubmit form
+            formTerima.submit();
+        }
     </script>
 @endsection
