@@ -515,6 +515,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('/aset-gudang-utama-store', 'kasi_store')->name('aset.gudang-utama.store');
             Route::get('/aset-gudang-utama/{uuid}/edit', 'kasi_edit')->name('aset.gudang-utama.edit');
             Route::put('/aset-gudang-utama/{uuid}/update', 'kasi_update')->name('aset.gudang-utama.update');
+            Route::get('/aset-gudang-utama/filter', 'kasi_filter')->name('aset.gudang-utama.filter');
             Route::get('/aset-gudang-pulau', 'kasi_gudang_pulau')->name('aset.gudang-pulau');
             Route::get('/aset-gudang-pulau/filter', 'kasi_gudang_pulau_filter')->name('aset.gudang-pulau.filter');
             Route::get('/aset-gudang-pulau-trans', 'kasi_gudang_pulau_trans')->name('aset.gudang-pulau-trans');

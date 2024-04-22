@@ -96,7 +96,9 @@
                                                     @endif
                                                 @endif
                                             </td>
-                                            <td class="text-center">{{ $item->kontrak->tanggal }}</td>
+                                            <td class="text-center">
+                                                {{ isset($item->kontrak->tanggal) ? \Carbon\Carbon::parse($item->kontrak->tanggal)->format('d-m-Y') : '-' }}
+                                            </td>
                                             <td class="text-center">{{ $item->kontrak->no_kontrak }}</td>
                                             <td class="text-center">{{ $item->kontrak->seksi->name }}</td>
                                             <td class="text-center font-weight-bolder">{{ $item->name }}</td>
@@ -202,7 +204,7 @@
     <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <form action="#" method="GET">
+            <form action="{{ route('aset.gudang-utama.filter') }}" method="GET">
                 @csrf
                 @method('GET')
                 <div class="modal-content">
@@ -220,7 +222,8 @@
                                     <select name="kontrak_id" class="form-control">
                                         <option value="" selected disabled>- pilih kontrak -</option>
                                         @foreach ($kontrak as $item)
-                                            <option value="{{ $item->id }}">{{ $item->no_kontrak }}
+                                            <option value="{{ $item->id }}"
+                                                @if ($item->id == $kontrak_id) selected @endif>{{ $item->no_kontrak }}
                                                 - {{ $item->name }}
                                                 - {{ $item->seksi->name }} - ({{ $item->tanggal }})
                                             </option>
@@ -231,28 +234,58 @@
                                     <label for="periode">Tahun Pengadaan</label>
                                     <select name="periode" class="form-control">
                                         <option value="" selected disabled>- pilih periode pengadaan -</option>
+                                        <option value="{{ $tahun - 4 }}">{{ $tahun - 4 }}</option>
+                                        <option value="{{ $tahun - 3 }}">{{ $tahun - 3 }}</option>
+                                        <option value="{{ $tahun - 2 }}">{{ $tahun - 2 }}</option>
                                         <option value="{{ $tahun - 1 }}">{{ $tahun - 1 }}</option>
                                         <option value="{{ $tahun }}">{{ $tahun }}</option>
                                         <option value="{{ $tahun + 1 }}">{{ $tahun + 1 }}</option>
+                                        <option value="{{ $tahun + 2 }}">{{ $tahun + 2 }}</option>
+                                        <option value="{{ $tahun + 3 }}">{{ $tahun + 3 }}</option>
+                                        <option value="{{ $tahun + 4 }}">{{ $tahun + 4 }}</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="">Jenis Barang</label>
                                     <select name="jenis" class="form-control">
                                         <option value="" selected disabled>- pilih jenis barang -</option>
-                                        <option value="consumable">Consumable</option>
-                                        <option value="tools">Tools</option>
-
+                                        <option value="consumable" @if ($jenis == 'consumable') selected @endif>
+                                            Consumable</option>
+                                        <option value="tools" @if ($jenis == 'tools') selected @endif>Tools
+                                        </option>
                                     </select>
                                 </div>
-                                <div class="form-group">
-                                    <label for="">Seksi</label>
-                                    <select name="seksi_id" class="form-control">
-                                        <option value="" selected disabled>- pilih seksi -</option>
-                                        @foreach ($seksi as $item)
-                                            <option value="{{ $item->id }}">Seksi {{ $item->name }}</option>
-                                        @endforeach
-                                    </select>
+                                <div class="form-row gutters">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group">
+                                            <label for="">Ketersediaan</label>
+                                            <select name="stock" class="form-control">
+                                                <option value="">- pilih ketersediaan stock -</option>
+                                                <option value=">" @if ($stock == '>')
+                                                    selected
+                                                    @endif>Ada
+                                                </option>
+                                                <option value="=" @if ($stock == '=') selected @endif>
+                                                    Habis
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row gutters">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                        <div class="form-group">
+                                            <label for="">Urutan</label>
+                                            <select name="sort" class="form-control">
+                                                <option value="ASC" @if ($sort == 'ASC') selected @endif>A
+                                                    to Z
+                                                </option>
+                                                <option value="DESC" @if ($sort == 'DESC') selected @endif>Z
+                                                    to A
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

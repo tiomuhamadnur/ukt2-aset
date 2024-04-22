@@ -29,18 +29,26 @@ class GudangBarangController extends Controller
                         ->orderBy('name', 'ASC')
                         ->get();
 
-        $gudang_tujuan = Gudang::all();
-        $kontrak = Kontrak::where('seksi_id', $seksi_id)->orderBy('tanggal', 'DESC')->get();
-        $seksi = Seksi::all();
+        $sort = 'DESC';
+
+        $gudang_tujuan = Gudang::orderBy('name', 'ASC')->get();
+        $kontrak = Kontrak::where('seksi_id', $seksi_id)->orderBy('tanggal', $sort)->get();
         $tahun = Carbon::now()->format('Y');
 
-        return view('user.aset.kasi.gudang.index', compact([
-            'barang',
-            'gudang_tujuan',
-            'kontrak',
-            'seksi',
-            'tahun'
-        ]));
+        $jenis = '';
+        $kontrak_id = '';
+        $stock = '';
+
+        return view('user.aset.kasi.gudang.index', [
+            'barang' => $barang,
+            'gudang_tujuan' => $gudang_tujuan,
+            'kontrak' => $kontrak,
+            'tahun' => $tahun,
+            'jenis' => $jenis,
+            'stock' => $stock,
+            'sort' => $sort,
+            'kontrak_id' => $kontrak_id,
+        ]);
     }
 
     public function kasi_create()
@@ -138,6 +146,60 @@ class GudangBarangController extends Controller
         }
 
         return redirect()->route('aset.gudang-utama')->withNotify('Data berhasil diubah!');
+    }
+
+    public function kasi_filter(Request $request)
+    {
+        $seksi_id = auth()->user()->struktur->seksi->id;
+        $kontrak_id = $request->kontrak_id;
+        $sort = $request->sort;
+        $tahun = $request->periode ?? Carbon::now()->year;
+        $jenis = $request->jenis;
+        $stock = $request->stock;
+
+        $barang = Barang::query();
+
+        // Filter seksi_id
+        $barang->whereRelation('kontrak.seksi', 'id', '=', $seksi_id);
+
+        // Filter by kontrak_id
+        $barang->when($kontrak_id, function ($query) use ($request) {
+            return $query->whereRelation('kontrak', 'id', '=', $request->kontrak_id);
+        });
+
+        // Filter by periode
+        $barang->when($tahun, function ($query) use ($tahun) {
+            return $query->whereHas('kontrak', function ($query) use ($tahun) {
+                $query->whereYear('tanggal', $tahun);
+            });
+        });
+
+        // Filter by jenis
+        $barang->when($jenis, function ($query) use ($request) {
+            return $query->where('jenis', $request->jenis);
+        });
+
+        // Filter by stock
+        $barang->when($stock, function ($query) use ($request) {
+            return $query->where('stock_aktual', $request->stock, 0);
+        });
+
+        // Order By
+        $barang = $barang->orderBy('name', $sort)->get();
+
+        $gudang_tujuan = Gudang::orderBy('name', 'ASC')->get();
+        $kontrak = Kontrak::where('seksi_id', $seksi_id)->orderBy('tanggal', $sort)->get();
+
+        return view('user.aset.kasi.gudang.index', [
+            'barang' => $barang,
+            'gudang_tujuan' => $gudang_tujuan,
+            'kontrak' => $kontrak,
+            'tahun' => $tahun,
+            'jenis' => $jenis,
+            'stock' => $stock,
+            'sort' => $sort,
+            'kontrak_id' => $kontrak_id,
+        ]);
     }
 
     public function kasi_gudang_pulau(Request $request)
