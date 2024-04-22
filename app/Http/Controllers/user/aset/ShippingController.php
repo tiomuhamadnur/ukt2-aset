@@ -239,16 +239,25 @@ class ShippingController extends Controller
     public function index_penerimaan(Request $request)
     {
         $pulau_id = $request->pulau_id;
+        $seksi_id = $request->seksi_id;
         $this_year = Carbon::now()->year;
         $user_id = auth()->user()->id;
+        $seksi_ids = FormasiTim::where('periode', $this_year)
+                            ->where('koordinator_id', $user_id)
+                            ->join('struktur', 'formasi_tim.struktur_id', '=', 'struktur.id')
+                            ->pluck('struktur.seksi_id')
+                            ->toArray();
+
         $pulau_ids = FormasiTim::where('periode', $this_year)
                             ->where('koordinator_id', $user_id)
                             ->join('area', 'formasi_tim.area_id', '=', 'area.id')
                             ->pluck('area.pulau_id')
                             ->toArray();
+
+        $seksi = Seksi::whereIn('id', $seksi_ids)->get();
         $pulau = Pulau::whereIn('id', $pulau_ids)->get();
-        $seksi_id = auth()->user()->struktur->seksi->id;
         $nama_pulau = Pulau::find($pulau_id)->name ?? '#';
+        $nama_seksi = Seksi::find($seksi_id)->name ?? '#';
 
         $penerimaan_barang = PengirimanBarang::select(
                             'no_resi',
@@ -267,9 +276,12 @@ class ShippingController extends Controller
 
             return view('user.aset.koordinator.penerimaan.index', compact([
                 'penerimaan_barang',
+                'nama_seksi',
                 'nama_pulau',
                 'pulau',
                 'pulau_id',
+                'seksi',
+                'seksi_id',
             ]));
     }
 

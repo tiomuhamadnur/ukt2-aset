@@ -21,8 +21,7 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="d-flex justify-content-center mb-3 text-center" style="text-decoration: underline">Data
-                        Penerimaan Barang - Seksi {{ auth()->user()->struktur->seksi->name ?? '-' }} -
-                        Pulau {{ $nama_pulau ?? '' }}
+                        Penerimaan Barang - Seksi {{ $nama_seksi ?? '' }} - Pulau {{ $nama_pulau ?? '' }}
                     </h4>
                     <div class="row d-flex justify-content-between align-items-center">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-3 text-left">
@@ -30,25 +29,12 @@
                                 <a href="{{ route('aset.koordinator.index') }}"
                                     class="btn btn-outline-primary mr-2 mb-2 mb-sm-0"><i class="fa fa-arrow-left"></i>
                                     Kembali</a>
+                                <a href="" class="btn btn-primary mr-2 mb-2 mb-sm-0" data-toggle="modal"
+                                    data-target="#modalFilter"><i class="fa fa-eye"></i> Tampilkan Data</a>
                                 <a href="{{ route('aset.penerimaan.index') }}" class="btn btn-primary mr-2 mb-2 mb-sm-0"
                                     title="Reset Filter">
                                     <i class="fa fa-refresh"></i>
                                 </a>
-                                <div class="form-group  mr-2 mb-2 mb-sm-0">
-                                    <form id="formSelect" action="{{ route('aset.penerimaan.index') }}" method="GET">
-                                        @csrf
-                                        @method('GET')
-                                        <select name="pulau_id" id="pulau_id" class="form-control">
-                                            <option value="" disabled selected>- pilih pulau -</option>
-                                            @foreach ($pulau as $item)
-                                                <option value="{{ $item->id }}"
-                                                    @if ($item->id == $pulau_id) selected @endif>Pulau
-                                                    {{ $item->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </form>
-                                </div>
                             </div>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
@@ -137,6 +123,73 @@
         </div>
     </div>
 
+    {{-- BEGIN: Filter Modal --}}
+    <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="{{ route('aset.penerimaan.index') }}" method="GET">
+                @csrf
+                @method('GET')
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Filter Data</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-row gutters">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="form-group">
+                                    <label for="">Seksi</label>
+                                    <select name="seksi_id" class="form-control" required>
+                                        @if ($seksi->count() > 1)
+                                            <option value="" selected disabled>- pilih seksi -</option>
+                                            @foreach ($seksi as $item)
+                                                <option value="{{ $item->id }}"
+                                                    @if ($item->id == $seksi_id) selected @endif>Seksi
+                                                    {{ $item->name }}
+                                                </option>
+                                            @endforeach
+                                        @else
+                                            @foreach ($seksi as $item)
+                                                <option value="{{ $item->id }}" selected>Seksi {{ $item->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Pulau</label>
+                                    <select name="pulau_id" class="form-control" required>
+                                        @if ($pulau->count() > 1)
+                                            <option value="" selected disabled>- pilih pulau -</option>
+                                            @foreach ($pulau as $item)
+                                                <option value="{{ $item->id }}"
+                                                    @if ($item->id == $pulau_id) selected @endif>Pulau
+                                                    {{ $item->name }}
+                                                </option>
+                                            @endforeach
+                                        @else
+                                            @foreach ($pulau as $item)
+                                                <option value="{{ $item->id }}" selected>Pulau {{ $item->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Tampilkan Data</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {{-- END: Filter Modal --}}
+
     {{-- BEGIN: Konfirmasi Penerimaan Barang --}}
     <div id="konfirmasiPenerimaanBarangModal" class="modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -223,11 +276,5 @@
 @endsection
 
 @section('javascript')
-    <script>
-        $(document).ready(function() {
-            document.getElementById('pulau_id').addEventListener('change', function() {
-                document.getElementById('formSelect').submit();
-            });
-        });
-    </script>
+    <script></script>
 @endsection
