@@ -547,6 +547,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/aset-pengiriman-create', 'create_pengiriman')->name('aset.pengiriman.create');
             Route::post('/aset-pengiriman', 'store_pengiriman')->name('aset.pengiriman.store');
             Route::get('/aset-pengiriman/{no_resi}/detail', 'show_pengiriman')->name('aset.pengiriman.show');
+            Route::get('/aset-pengiriman/generate-BAST', 'generateBAST')->name('aset.pengiriman.BAST');
             Route::get('/aset-pengiriman/filter', 'filter_pengiriman')->name('aset.pengiriman.filter');
         });
 

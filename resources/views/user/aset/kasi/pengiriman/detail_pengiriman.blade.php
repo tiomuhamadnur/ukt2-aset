@@ -134,7 +134,7 @@
                         <div class="text-slate-500 mt-2">BAST akan dibuat berdasarkan data yang ditampilkan!</div>
                     </div>
                     <div class="px-5 pb-8 text-center mt-3">
-                        <form action="{{ route('aset.penerimaan.BAST') }}" method="GET">
+                        <form action="{{ route('aset.pengiriman.BAST') }}" method="GET">
                             @csrf
                             @method('GET')
                             <input type="text" name="no_resi" value="{{ $nomor_resi }}" id="no_resi" hidden>

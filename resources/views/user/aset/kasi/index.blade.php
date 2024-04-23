@@ -44,7 +44,7 @@
                             <a href="{{ route('aset.pengiriman.index') }}">
                                 <div class="launch-box h-180">
                                     <h3>Pengiriman</h3>
-                                    <i class="fa fa-truck"></i>
+                                    <i class="fa fa-ship"></i>
                                     <p>{{ $tanggal }}</p>
                                     <h3>Lihat Data Pengiriman</h3>
                                 </div>
