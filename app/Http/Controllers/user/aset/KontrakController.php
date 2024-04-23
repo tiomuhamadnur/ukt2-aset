@@ -47,7 +47,7 @@ class KontrakController extends Controller
                 'nilai_kontrak' => 'required',
                 'tanggal' => 'required',
                 'seksi_id' => 'required',
-                'lampiran' => 'file|mimes:pdf|max:1024',
+                'lampiran' => 'file|mimes:pdf|max:5120',
             ],
             [
                 'lampiran.max' => 'ukuran file lampiran maksimal 1 MB',

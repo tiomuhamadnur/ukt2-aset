@@ -40,7 +40,7 @@
                                 placeholder="Nama Kontrak" required autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" name="nilai_kontrak"
+                            <input type="number" class="form-control" name="nilai_kontrak"
                                 placeholder="Nilai Kontrak (Rp.)" required autocomplete="off">
                         </div>
                         <div class="form-group">
@@ -48,7 +48,7 @@
                                 onfocus="(this.type='date')" class="form-control" name="tanggal">
                         </div>
                         <div class="form-group">
-                            <label for="">Dokumen Kontrak <span class="text-danger">(PDF Max: 1MB)</span></label>
+                            <label for="">Dokumen Kontrak <span class="text-danger">(PDF Max: 5MB)</span></label>
                             <input type="file" class="form-control" name="lampiran" placeholder="Dokumen Kontrak Kontrak"
                                 required accept="application/pdf" required>
                             @error('lampiran')
@@ -70,13 +70,13 @@
 @endsection
 
 @section('javascript')
-<script>
-    // Percobaan Disable after Klik Button utk Prevent Spam Klik Submit
-    document.getElementById("submitBtn").addEventListener("click", function(event) {
-        if (!validateInputs()) {
-            event.preventDefault();
-        }
-        this.disabled = true;
-    });
-</script>
+    <script>
+        // Percobaan Disable after Klik Button utk Prevent Spam Klik Submit
+        document.getElementById("submitBtn").addEventListener("click", function(event) {
+            if (!validateInputs()) {
+                event.preventDefault();
+            }
+            this.disabled = true;
+        });
+    </script>
 @endsection
