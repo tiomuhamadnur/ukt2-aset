@@ -30,9 +30,15 @@
                                     class="btn btn-outline-primary mr-2 mb-2 mb-sm-0"><i class="fa fa-arrow-left"></i>
                                     Kembali</a>
                                 @if ($validasiBAST == 0)
-                                    <a href="javascript:;" class="btn btn-primary" data-toggle="modal"
-                                        data-target="#bast-confirmation-modal" title="Buat BAST Penerimaan Barang">
-                                        <i class="fa fa-print"></i> Generate BAST Penerimaan Barang
+                                    <a href="javascript:;" class="btn btn-primary mr-2 mb-2 mb-sm-0" data-toggle="modal"
+                                        data-target="#bast-confirmation-modal" title="BAST Kasi ke Koordinator">
+                                        <i class="fa fa-print"></i> BAST (Kasi <i class="fa fa-arrow-right"></i>
+                                        Koordinator)
+                                    </a>
+                                    <a href="javascript:;" class="btn btn-primary mr-2 mb-2 mb-sm-0" data-toggle="modal"
+                                        data-target="#bast2-confirmation-modal" title="BAST Koordinator ke PJLP">
+                                        <i class="fa fa-print"></i> BAST (Koordinator <i class="fa fa-arrow-right"></i>
+                                        PJLP)
                                     </a>
                                 @endif
                             </div>
@@ -138,6 +144,46 @@
         </div>
     </div>
 
+    {{-- BEGIN: BAST 2 Modal Confirmation --}}
+    <div id="bast2-confirmation-modal" class="modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">BAST Penerimaan Barang</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-2">
+                    <form id="formBAST" action="{{ route('aset.penerimaan.BAST2') }}" method="GET">
+                        @csrf
+                        @method('GET')
+                        <input type="text" name="no_resi" value="{{ $nomor_resi }}" id="no_resi" hidden>
+                        <div class="form-group">
+                            <label for="">Dari Koordinator PNS</label>
+                            <input type="text" class="form-control" value="{{ auth()->user()->name }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Kepada Koordinator Lapangan</label>
+                            <select name="user_id" class="form-control" required>
+                                <option value="" selected disabled>- pilih personil PJLP -</option>
+                                @foreach ($user as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" form="formBAST" formtarget="_blank" class="btn btn-primary">Buat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- END: BAST Modal --}}
+
     {{-- BEGIN: BAST Modal Confirmation --}}
     <div id="bast-confirmation-modal" class="modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -145,7 +191,8 @@
                 <div class="modal-body p-2">
                     <div class="p-2 text-center">
                         <h4 class="text-3xl mt-2">Apakah anda yakin?</h4>
-                        <div class="text-slate-500 mt-2">BAST akan dibuat berdasarkan data yang ditampilkan!</div>
+                        <div class="text-slate-500 mt-2">BAST (Kasi <i class="fa fa-arrow-right"></i>
+                            Koordinator) akan dibuat berdasarkan data yang ditampilkan!</div>
                     </div>
                     <div class="px-5 pb-8 text-center mt-3">
                         <form action="{{ route('aset.penerimaan.BAST') }}" method="GET">
@@ -161,7 +208,7 @@
             </div>
         </div>
     </div>
-    {{-- END: BAST Moal --}}
+    {{-- END: BAST Modal --}}
 
     {{-- BEGIN: Konfirmasi Penerimaan Barang --}}
     <div id="konfirmasiPenerimaanBarangModal" class="modal" tabindex="-1" aria-hidden="true">

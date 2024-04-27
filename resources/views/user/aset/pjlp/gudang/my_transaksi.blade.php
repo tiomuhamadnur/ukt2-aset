@@ -65,8 +65,9 @@
                                     <th class="text-center">PIC</th>
                                     <th class="text-center">Gudang</th>
                                     <th class="text-center">Nama Barang</th>
+                                    <th class="text-center">Spesifikasi Barang</th>
                                     <th class="text-center">Jenis Barang</th>
-                                    <th class="text-center">Tanggal Pengambilan</th>
+                                    <th class="text-center text-wrap">Tanggal Pengambilan</th>
                                     <th class="text-center">Jumlah</th>
                                     <th class="text-center">Kegiatan</th>
                                     <th class="text-center">Catatan</th>
@@ -81,16 +82,18 @@
                                         </td>
                                         <td class="text-center font-weight-bold">{{ $item->user->name }}</td>
                                         <td class="text-center">{{ $item->barang_pulau->gudang->name }}</td>
-                                        <td class="text-center font-weight-bold">{{ $item->barang_pulau->barang->name }}
+                                        <td class="text-left font-weight-bold">{{ $item->barang_pulau->barang->name }}
+                                        </td>
+                                        <td class="text-left text-wrap">{{ $item->barang_pulau->barang->spesifikasi }}
                                         </td>
                                         <td class="text-center">
                                             {{ $item->barang_pulau->barang->jenis ?? '-' }}</td>
                                         <td class="text-center">{{ date('d-m-Y', strtotime($item->tanggal)) }}</td>
-                                        <td class="text-center">{{ $item->qty }}
-                                            ({{ $item->barang_pulau->barang->satuan ?? '-' }})
+                                        <td class="text-center font-weight-bold">{{ $item->qty }}
+                                            {{ $item->barang_pulau->barang->satuan ?? '-' }}
                                         </td>
-                                        <td class="text-center text-wrap">{{ $item->kegiatan ?? '-' }}</td>
-                                        <td class="text-center text-wrap">{{ $item->catatan ?? '-' }}</td>
+                                        <td class="text-left text-wrap">{{ $item->kegiatan ?? '-' }}</td>
+                                        <td class="text-left text-wrap">{{ $item->catatan ?? '-' }}</td>
                                         <td class="text-center">
                                             <a href="#" class="btn btn-outline-primary" title="Lihat Photo"
                                                 data-toggle="modal" data-target="#modalLampiran"

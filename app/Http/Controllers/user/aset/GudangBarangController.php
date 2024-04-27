@@ -23,8 +23,10 @@ class GudangBarangController extends Controller
     public function kasi_index()
     {
         $seksi_id = auth()->user()->struktur->seksi->id;
-        $barang = Barang::where('stock_aktual', '>', 0)
-                        ->whereRelation('kontrak.seksi', 'id', '=', $seksi_id)
+        $barang = Barang::whereRelation('kontrak.seksi', 'id', '=', $seksi_id)
+                        // ->where('stock_aktual', '>', 0)
+                        // ->whereRelation('kontrak.seksi', 'id', '=', $seksi_id)
+                        ->orderBy('stock_aktual', 'DESC')
                         ->orderBy('kontrak_id', 'ASC')
                         ->orderBy('name', 'ASC')
                         ->get();
@@ -301,6 +303,25 @@ class GudangBarangController extends Controller
         return view('user.aset.kasi.gudang.transaksi_pulau', compact([
             'transaksi'
         ]));
+    }
+
+    public function kasi_destroy(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+        ]);
+
+        $id = $request->id;
+        $barang = Barang::findOrFail($id);
+        if($barang->photo != null)
+        {
+            foreach(json_decode($barang->photo) as $photo)
+            {
+                Storage::delete($photo);
+            }
+        }
+        $barang->forceDelete();
+        return redirect()->route('aset.gudang-utama')->withNotify('Data berhasil dihapus!');
     }
 
 

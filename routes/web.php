@@ -513,6 +513,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/aset-gudang-utama', 'kasi_index')->name('aset.gudang-utama');
             Route::get('/aset-gudang-utama-create', 'kasi_create')->name('aset.gudang-utama.create');
             Route::post('/aset-gudang-utama-store', 'kasi_store')->name('aset.gudang-utama.store');
+            Route::delete('/aset-gudang-utama-delete', 'kasi_destroy')->name('aset.gudang-utama.delete');
             Route::get('/aset-gudang-utama/{uuid}/edit', 'kasi_edit')->name('aset.gudang-utama.edit');
             Route::put('/aset-gudang-utama/{uuid}/update', 'kasi_update')->name('aset.gudang-utama.update');
             Route::get('/aset-gudang-utama/filter', 'kasi_filter')->name('aset.gudang-utama.filter');
@@ -556,6 +557,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/aset-penerimaan', 'index_penerimaan')->name('aset.penerimaan.index');
             Route::put('/aset-penerimaan/terima', 'terima_barang')->name('aset.penerimaan.terima');
             Route::get('/aset-penerimaan/generate-BAST', 'generateBAST')->name('aset.penerimaan.BAST');
+            Route::get('/aset-penerimaan/generate-BAST2', 'generateBAST2')->name('aset.penerimaan.BAST2');
             Route::get('/aset-penerimaan/{no_resi}/detail', 'show_penerimaan')->name('aset.penerimaan.show');
         });
     });

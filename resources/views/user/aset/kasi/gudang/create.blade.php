@@ -31,8 +31,8 @@
                             <select name="kontrak_id" class="form-control" required>
                                 <option value="" selected disabled>- pilih kontrak -</option>
                                 @foreach ($kontrak as $item)
-                                    <option value="{{ $item->id }}">{{ $item->periode }} - {{ $item->name }}
-                                        (Seksi {{ $item->seksi->name }})
+                                    <option value="{{ $item->id }}">{{ $item->periode }} - {{ $item->name }} -
+                                        {{ $item->no_kontrak }} (Seksi {{ $item->seksi->name }})
                                     </option>
                                 @endforeach
                             </select>

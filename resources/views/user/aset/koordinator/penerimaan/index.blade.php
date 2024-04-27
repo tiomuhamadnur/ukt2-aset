@@ -82,8 +82,8 @@
                                             <td class="text-center">
                                                 {{ $item->tanggal_terima ?? '-' }}
                                             </td>
-                                            <td class="text-center">
-                                                {{ $item->catatan }}
+                                            <td class="text-left">
+                                                {{ $item->catatan ?? '-' }}
                                             </td>
                                             <td class="text-center">
                                                 <span

@@ -50,6 +50,10 @@
                             </form>
                         </div>
                     </div>
+                    <div>
+                        <p>NOTE: Jika barang yang anda cari tidak ada, maka stock barang sudah habis. Silahkan hubungi PIC
+                            terkait!</p>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="dataTable">
                             <thead>
@@ -60,11 +64,11 @@
                                         <input type="checkbox" id="checkAll">
                                     </th>
                                     <th class="text-center">Nama Barang</th>
+                                    <th class="text-center">Spesifikasi Barang</th>
                                     <th class="text-center">Jenis Barang</th>
                                     <th class="text-center">Tahun Pengadaan</th>
                                     <th class="text-center">Stock Awal</th>
                                     <th class="text-center">Stock Saat Ini</th>
-                                    <th class="text-center">Satuan</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -80,15 +84,17 @@
                                                 <input type="checkbox" class="barang-checkbox" name="barang_pulau_id[]"
                                                     value="{{ $item->id }}">
                                             </td>
-                                            <td class="text-center font-weight-bold">{{ $item->barang->name }}</td>
+                                            <td class="text-left font-weight-bold">{{ $item->barang->name }}</td>
+                                            <td class="text-left text-wrap">{{ $item->barang->spesifikasi }}</td>
                                             <td class="text-center">{{ $item->barang->jenis }}</td>
                                             <td class="text-center">
                                                 {{ date('d-m-Y', strtotime($item->barang->kontrak->tanggal)) }} <br>
                                                 ({{ $item->barang->kontrak->no_kontrak }})
                                             </td>
-                                            <td class="text-center">{{ $item->stock_awal }}</td>
-                                            <td class="text-center">{{ $item->stock_aktual }}</td>
-                                            <td class="text-center">{{ $item->barang->satuan }}</td>
+                                            <td class="text-center">{{ $item->stock_awal }} {{ $item->barang->satuan }}
+                                            </td>
+                                            <td class="text-center font-weight-bold">{{ $item->stock_aktual }}
+                                                {{ $item->barang->satuan }}</td>
                                             <td class="text-center">
                                                 <a href="#" class="btn btn-outline-primary" title="Lihat Photo"
                                                     data-toggle="modal" data-target="#modalLampiran"
@@ -203,16 +209,6 @@
         }
 
         $(document).ready(function() {
-            $('input[type="checkbox"]').change(function() {
-                var diceklis = $('input[type="checkbox"]:checked').length > 0;
-
-                if (diceklis) {
-                    $('#ambilBarangButton').show();
-                } else {
-                    $('#ambilBarangButton').hide();
-                }
-            });
-
             document.getElementById('checkAll').addEventListener('change', function() {
                 var checkboxes = document.querySelectorAll('.barang-checkbox');
                 checkboxes.forEach(function(checkbox) {
@@ -231,6 +227,16 @@
                     });
                     document.getElementById('checkAll').checked = allChecked;
                 });
+            });
+
+            $('input[type="checkbox"]').change(function() {
+                var diceklis = $('input[type="checkbox"]:checked').length > 0;
+
+                if (diceklis) {
+                    $('#ambilBarangButton').show();
+                } else {
+                    $('#ambilBarangButton').hide();
+                }
             });
 
             $('#modalLampiran').on('show.bs.modal', function(e) {

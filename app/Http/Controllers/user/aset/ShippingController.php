@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\PengirimanBarang;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
@@ -132,10 +133,27 @@ class ShippingController extends Controller
 
     public function show_pengiriman($no_resi)
     {
+        $seksi_id = PengirimanBarang::where('no_resi', $no_resi)->firstOrFail()->barang->kontrak->seksi->id;
+        $pulau_id = PengirimanBarang::where('no_resi', $no_resi)->firstOrFail()->gudang->pulau->id;
+
         $pengiriman_barang = PengirimanBarang::where('no_resi', $no_resi)->get();
         $validasiBAST = PengirimanBarang::where('no_resi', $no_resi)->where('status', 'Dikirim')->count();
         $nomor_resi = $no_resi;
-        return view('user.aset.kasi.pengiriman.detail_pengiriman', compact(['pengiriman_barang', 'validasiBAST', 'nomor_resi']));
+        $user_ids = FormasiTim::where('periode', Carbon::now()->year)
+                            ->where('koordinator_id', auth()->user()->id)
+                            ->whereRelation('struktur.seksi', 'id', '=', $seksi_id)
+                            ->whereRelation('area.pulau', 'id', '=', $pulau_id)
+                            ->pluck('anggota_id')
+                            ->toArray();
+
+        $user = User::whereIn('id', $user_ids)->get();
+
+        return view('user.aset.kasi.pengiriman.detail_pengiriman', compact([
+            'pengiriman_barang',
+            'validasiBAST',
+            'nomor_resi',
+            'user',
+        ]));
     }
 
     public function generateBAST(Request $request)
@@ -155,6 +173,39 @@ class ShippingController extends Controller
         $pdf = Pdf::loadView('pages.barang.transaksi.export.bast', [
             'pengirimanBarang' => $pengirimanBarang,
             'dataPengiriman' => $dataPengiriman,
+            'hari' => $hari,
+            'tanggal' => $tanggal,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+        ]);
+
+        return $pdf->stream(Carbon::now()->format('Ymd_') . 'Surat BAST.pdf');
+    }
+
+    public function generateBAST2(Request $request)
+    {
+        $request->validate([
+            'no_resi' => 'required',
+            'user_id' => 'required',
+        ]);
+
+        $no_resi = $request->no_resi;
+        $user_id = $request->user_id;
+
+        $pengirimanBarang = PengirimanBarang::where('no_resi', $no_resi)->get();
+        $dataPengiriman = PengirimanBarang::where('no_resi', $no_resi)->firstOrFail();
+        $hari = Carbon::parse($dataPengiriman->tanggal_terima)->isoFormat('dddd');
+        $tanggal = Carbon::parse($dataPengiriman->tanggal_terima)->isoFormat('D');
+        $bulan = Carbon::parse($dataPengiriman->tanggal_terima)->isoFormat('MMMM');
+        $tahun = Carbon::parse($dataPengiriman->tanggal_terima)->isoFormat('Y');
+        $dari = User::findOrFail(auth()->user()->id);
+        $kepada = User::findOrFail($user_id);
+
+        $pdf = Pdf::loadView('pages.barang.transaksi.export.bast2', [
+            'pengirimanBarang' => $pengirimanBarang,
+            'dataPengiriman' => $dataPengiriman,
+            'dari' => $dari,
+            'kepada' => $kepada,
             'hari' => $hari,
             'tanggal' => $tanggal,
             'bulan' => $bulan,
@@ -287,15 +338,29 @@ class ShippingController extends Controller
 
     public function show_penerimaan($no_resi)
     {
+        $seksi_id = PengirimanBarang::where('no_resi', $no_resi)->firstOrFail()->barang->kontrak->seksi->id;
+        $pulau_id = PengirimanBarang::where('no_resi', $no_resi)->firstOrFail()->gudang->pulau->id;
+
         $pengiriman_barang = PengirimanBarang::where('no_resi', $no_resi)->get();
         $validasiBAST = PengirimanBarang::where('no_resi', $no_resi)->where('status', 'Dikirim')->count();
         $validasiCheckbox = PengirimanBarang::where('no_resi', $no_resi)->where('status', 'Dikirim')->where('photo_terima', '!=', null)->count();
         $nomor_resi = $no_resi;
+
+        $user_ids = FormasiTim::where('periode', Carbon::now()->year)
+                            ->where('koordinator_id', auth()->user()->id)
+                            ->whereRelation('struktur.seksi', 'id', '=', $seksi_id)
+                            ->whereRelation('area.pulau', 'id', '=', $pulau_id)
+                            ->pluck('anggota_id')
+                            ->toArray();
+
+        $user = User::whereIn('id', $user_ids)->get();
+
         return view('user.aset.koordinator.penerimaan.detail_penerimaan', compact([
             'pengiriman_barang',
             'validasiBAST',
             'validasiCheckbox',
             'nomor_resi',
+            'user',
         ]));
     }
 

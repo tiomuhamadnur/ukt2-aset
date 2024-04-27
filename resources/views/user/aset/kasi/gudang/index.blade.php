@@ -72,14 +72,14 @@
                                     <th class="text-center">No. Kontrak</th>
                                     <th class="text-center">Seksi</th>
                                     <th class="text-center">Nama Barang</th>
+                                    <th class="text-center text-wrap">Spesifikasi Barang</th>
                                     <th class="text-center">Merk Barang</th>
                                     <th class="text-center">Jenis Barang</th>
                                     <th class="text-center">Harga <br> (Termasuk PPN)</th>
                                     {{-- <th class="text-center">Kode Barang</th> --}}
                                     <th class="text-center">Stock Awal</th>
-                                    <th class="text-center">Stock Aktual</th>
+                                    <th class="text-center">Stock Akhir</th>
                                     {{-- <th class="text-center">Harga Barang</th> --}}
-                                    <th class="text-center">Spesifikasi Barang</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -98,20 +98,21 @@
                                                     @endif
                                                 @endif
                                             </td>
-                                            <td class="text-center">
+                                            <td class="text-center text-nowrap">
                                                 {{ isset($item->kontrak->tanggal) ? \Carbon\Carbon::parse($item->kontrak->tanggal)->format('d-m-Y') : '-' }}
                                             </td>
                                             <td class="text-center">{{ $item->kontrak->no_kontrak }}</td>
                                             <td class="text-center">{{ $item->kontrak->seksi->name }}</td>
-                                            <td class="text-center font-weight-bolder">{{ $item->name }}</td>
-                                            <td class="text-center">{{ $item->merk }}</td>
+                                            <td class="text-left font-weight-bolder">{{ $item->name }}</td>
+                                            <td class="text-left text-wrap">{{ $item->spesifikasi }}</td>
+                                            <td class="text-left">{{ $item->merk }}</td>
                                             <td class="text-center">{{ $item->jenis }}</td>
                                             <td class="text-center">{{ formatRupiah($item->harga, true) }}</td>
                                             {{-- <td class="text-center">{{ $item->code }}</td> --}}
                                             <td class="text-center">{{ $item->stock_awal }} {{ $item->satuan }}</td>
-                                            <td class="text-center">{{ $item->stock_aktual }} {{ $item->satuan }}</td>
+                                            <td class="text-center font-weight-bolder">{{ $item->stock_aktual }}
+                                                {{ $item->satuan }}</td>
                                             {{-- <td class="text-center">Rp.{{ $item->harga }}</td> --}}
-                                            <td class="text-center">{{ $item->spesifikasi }}</td>
                                             <td class="text-center">
                                                 <a href="{{ route('aset.gudang-utama.edit', $item->uuid) }}"
                                                     class="btn btn-outline-primary" title="Edit"><i
@@ -161,7 +162,7 @@
                         <div class="text-slate-500 mt-2">Peringatan: Data ini akan dihapus secara permanent</div>
                     </div>
                     <div class="px-5 pb-8 text-center mt-3">
-                        <form action="{{ route('barang.destroy') }}" method="POST">
+                        <form action="{{ route('aset.gudang-utama.delete') }}" method="POST">
                             @csrf
                             @method('delete')
                             <input type="text" name="id" id="id" hidden>
