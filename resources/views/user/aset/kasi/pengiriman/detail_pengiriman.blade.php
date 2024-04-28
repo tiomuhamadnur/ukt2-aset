@@ -52,6 +52,7 @@
                                 <tr>
                                     <th class="text-center">No.</th>
                                     <th class="text-center">Nama Barang</th>
+                                    <th class="text-center">Spesifikasi Barang</th>
                                     <th class="text-center">Qty.</th>
                                     <th class="text-center">Asal</th>
                                     <th class="text-center">Tujuan</th>
@@ -72,8 +73,10 @@
                                     @foreach ($pengiriman_barang as $item)
                                         <tr>
                                             <td class="text-center">{{ $loop->iteration }}</td>
-                                            <td class="text-center">{{ $item->barang->name }}</td>
-                                            <td class="text-center">{{ $item->qty }} {{ $item->barang->satuan }}</td>
+                                            <td class="text-left font-weight-bold">{{ $item->barang->name }}</td>
+                                            <td class="text-left">{{ $item->barang->spesifikasi }}</td>
+                                            <td class="text-center font-weight-bold">{{ $item->qty }}
+                                                {{ $item->barang->satuan }}</td>
                                             <td class="text-center">Gudang Utama</td>
                                             <td class="text-center">{{ $item->gudang->name }}</td>
                                             <td class="text-center text-wrap">{{ $item->submitter->name }}</td>
@@ -138,7 +141,8 @@
                             @csrf
                             @method('GET')
                             <input type="text" name="no_resi" value="{{ $nomor_resi }}" id="no_resi" hidden>
-                            <button type="button" data-dismiss="modal" class="btn btn-dark w-24 mr-1 me-2">Batal</button>
+                            <button type="button" data-dismiss="modal"
+                                class="btn btn-dark w-24 mr-1 me-2">Batal</button>
                             <button type="submit" class="btn btn-primary w-24" formtarget="_blank">Buat</button>
                         </form>
                     </div>

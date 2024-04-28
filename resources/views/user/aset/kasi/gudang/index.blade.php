@@ -106,7 +106,15 @@
                                             <td class="text-left font-weight-bolder">{{ $item->name }}</td>
                                             <td class="text-left text-wrap">{{ $item->spesifikasi }}</td>
                                             <td class="text-left">{{ $item->merk }}</td>
-                                            <td class="text-center">{{ $item->jenis }}</td>
+                                            <td class="text-center">
+                                                @if ($item->jenis == 'consumable')
+                                                    Barang Persediaan
+                                                @elseif ($item->jenis == 'tools')
+                                                    Barang Modal/Aset
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
                                             <td class="text-center">{{ formatRupiah($item->harga, true) }}</td>
                                             {{-- <td class="text-center">{{ $item->code }}</td> --}}
                                             <td class="text-center">{{ $item->stock_awal }} {{ $item->satuan }}</td>
@@ -253,8 +261,9 @@
                                     <select name="jenis" class="form-control">
                                         <option value="" selected disabled>- pilih jenis barang -</option>
                                         <option value="consumable" @if ($jenis == 'consumable') selected @endif>
-                                            Consumable</option>
-                                        <option value="tools" @if ($jenis == 'tools') selected @endif>Tools
+                                            Barang Persediaan</option>
+                                        <option value="tools" @if ($jenis == 'tools') selected @endif>Barang
+                                            Modal/Aset
                                         </option>
                                     </select>
                                 </div>

@@ -87,7 +87,14 @@
                                         <td class="text-left text-wrap">{{ $item->barang_pulau->barang->spesifikasi }}
                                         </td>
                                         <td class="text-center">
-                                            {{ $item->barang_pulau->barang->jenis ?? '-' }}</td>
+                                            @if ($item->barang_pulau->barang->jenis == 'consumable')
+                                                Barang Persediaan
+                                            @elseif ($item->barang_pulau->barang->jenis == 'tools')
+                                                Barang Modal/Aset
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td class="text-center">{{ date('d-m-Y', strtotime($item->tanggal)) }}</td>
                                         <td class="text-center font-weight-bold">{{ $item->qty }}
                                             {{ $item->barang_pulau->barang->satuan ?? '-' }}
@@ -140,9 +147,10 @@
                                     <select name="jenis" class="form-control">
                                         <option value="" selected disabled>- pilih jenis barang -</option>
                                         <option value="consumable" @if ($jenis == 'consumable') selected @endif>
-                                            Consumable
+                                            Barang Persediaan
                                         </option>
-                                        <option value="tools" @if ($jenis == 'tools') selected @endif>Tools
+                                        <option value="tools" @if ($jenis == 'tools') selected @endif>Barang
+                                            Modal/Aset
                                         </option>
 
                                     </select>

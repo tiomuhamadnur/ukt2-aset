@@ -86,7 +86,15 @@
                                             </td>
                                             <td class="text-left font-weight-bold">{{ $item->barang->name }}</td>
                                             <td class="text-left text-wrap">{{ $item->barang->spesifikasi }}</td>
-                                            <td class="text-center">{{ $item->barang->jenis }}</td>
+                                            <td class="text-center">
+                                                @if ($item->barang->jenis == 'consumable')
+                                                    Barang Persediaan
+                                                @elseif ($item->barang->jenis == 'tools')
+                                                    Barang Modal/Aset
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
                                             <td class="text-center">
                                                 {{ date('d-m-Y', strtotime($item->barang->kontrak->tanggal)) }} <br>
                                                 ({{ $item->barang->kontrak->no_kontrak }})
@@ -149,8 +157,8 @@
                                 <label for="">Jenis Barang</label>
                                 <select name="jenis_barang" class="form-control" required>
                                     <option value="" selected disabled>- pilih jenis barang -</option>
-                                    <option value="consumable">Consumable</option>
-                                    <option value="tools">Tools</option>
+                                    <option value="consumable">Barang Persediaan</option>
+                                    <option value="tools">Barang Modal/Aset</option>
 
                                 </select>
                             </div>

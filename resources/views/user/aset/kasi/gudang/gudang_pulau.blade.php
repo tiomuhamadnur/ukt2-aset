@@ -54,12 +54,13 @@
                                     <th class="text-center">No.</th>
                                     <th class="text-center">No. Kontrak</th>
                                     <th class="text-center">Seksi</th>
-                                    <th class="text-center">Pulau</th>
+                                    <th class="text-center">Gudang Pulau</th>
                                     <th class="text-center">Nama Barang</th>
+                                    <th class="text-center">Spesifikasi Barang</th>
                                     <th class="text-center">Merk Barang</th>
                                     <th class="text-center">Jenis Barang</th>
                                     <th class="text-center">Stock Awal</th>
-                                    <th class="text-center">Stock Aktual</th>
+                                    <th class="text-center">Stock Akhir</th>
                                     <th class="text-center">Ketersediaan</th>
                                 </tr>
                             </thead>
@@ -69,10 +70,19 @@
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td class="text-center">{{ $item->barang->kontrak->no_kontrak ?? '-' }}</td>
                                         <td class="text-center">{{ $item->barang->kontrak->seksi->name }}</td>
-                                        <td class="text-center">Pulau {{ $item->gudang->pulau->name ?? '-' }}</td>
-                                        <td class="text-center font-weight-bold">{{ $item->barang->name }}</td>
+                                        <td class="text-center">{{ $item->gudang->name ?? '-' }}</td>
+                                        <td class="text-left font-weight-bold">{{ $item->barang->name }}</td>
+                                        <td class="text-left">{{ $item->barang->spesifikasi }}</td>
                                         <td class="text-center">{{ $item->barang->merk ?? '-' }}</td>
-                                        <td class="text-center">{{ $item->barang->jenis ?? '-' }}</td>
+                                        <td class="text-center">
+                                            @if ($item->barang->jenis == 'consumable')
+                                                Barang Persediaan
+                                            @elseif ($item->barang->jenis == 'tools')
+                                                Barang Modal/Aset
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td class="text-center">{{ $item->stock_awal }} {{ $item->barang->satuan }}</td>
                                         <td class="text-center font-weight-bold">{{ $item->stock_aktual }}
                                             {{ $item->barang->satuan }}</td>
@@ -195,8 +205,9 @@
                                     <select name="jenis" class="form-control">
                                         <option value="" selected disabled>- pilih jenis barang -</option>
                                         <option value="consumable" @if ($jenis == 'consumable') selected @endif>
-                                            Consumable</option>
-                                        <option value="tools" @if ($jenis == 'tools') selected @endif>Tools
+                                            Barang Persediaan</option>
+                                        <option value="tools" @if ($jenis == 'tools') selected @endif>Barang
+                                            Modal/Aset
                                         </option>
 
                                     </select>
