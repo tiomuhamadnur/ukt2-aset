@@ -48,7 +48,7 @@ class DashboardController extends Controller
             return redirect()->route('aset.pjlp.index');
         }
         else {
-            return view('dashboard.index');
+            return view('superadmin.dashboard.index');
         }
     }
 

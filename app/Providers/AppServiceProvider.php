@@ -2,23 +2,16 @@
 
 namespace App\Providers;
 
+use App\Models\Seksi;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    public function boot()
     {
-        //
-    }
+        $seksiList = Seksi::select('id', 'uuid', 'name')->orderBy('name')->get();
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        //
+        View::share('seksiList', $seksiList);
     }
 }

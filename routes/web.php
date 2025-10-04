@@ -34,6 +34,9 @@ use App\Http\Controllers\pages\KinerjaController;
 use App\Http\Controllers\pages\CutiController;
 use App\Http\Controllers\pages\PengirimanBarangController;
 use App\Http\Controllers\pages\TransaksiBarangPulauController;
+use App\Http\Controllers\superadmin\GudangUtamaController as SuperadminGudangUtamaController;
+use App\Http\Controllers\superadmin\KontrakController as SuperadminKontrakController;
+use App\Http\Controllers\superadmin\ShippingController as SuperadminShippingController;
 use App\Http\Controllers\user\aset\DashboardController as AsetDashboardController;
 use App\Http\Controllers\user\aset\GudangBarangController;
 use App\Http\Controllers\user\aset\KontrakController as AsetKontrakController;
@@ -71,8 +74,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/data_relasi', 'data_relasi')->name('data_relasi.index');
         // Landing Page
         Route::get('/landingpage', 'landingpage')->name('landingpage');
-
-
     });
     // ---------------------MASTERDATA ESSENTIALS----------------------------
 
@@ -419,7 +420,6 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('/simoja-pjlp-absensi', 'store_pjlp')->name('simoja.pjlp.absensi.store');
             Route::get('/simoja-pjlp-absensi/filter', 'filter_pjlp')->name('simoja.pjlp.absensi.filter');
         });
-
     });
 
     // KINERJA
@@ -447,7 +447,6 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('/simoja-pjlp-kinerja', 'store_pjlp')->name('simoja.kinerja.pjlp.store');
             Route::get('/simoja-pjlp-kinerja/filter', 'filter_pjlp')->name('simoja.kinerja.pjlp.filter');
         });
-
     });
 
     // CUTI
@@ -481,7 +480,6 @@ Route::group(['middleware' => 'auth'], function () {
 
             Route::get('/simoja-pjlp-cuti/filter', 'filter_pjlp')->name('simoja.pjlp.cuti.filter');
         });
-
     });
     // END SIMOJA ----------------------------------------------------------------------
 
@@ -559,6 +557,44 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/aset-penerimaan/generate-BAST', 'generateBAST')->name('aset.penerimaan.BAST');
             Route::get('/aset-penerimaan/generate-BAST2', 'generateBAST2')->name('aset.penerimaan.BAST2');
             Route::get('/aset-penerimaan/{no_resi}/detail', 'show_penerimaan')->name('aset.penerimaan.show');
+        });
+
+        // SUPERADMIN
+        Route::middleware('Superadmin')->group(function () {
+            Route::controller(SuperadminKontrakController::class)->group(function () {
+                Route::get('/admin-kontrak/seksi/{uuid}', 'index')->name('admin-kontrak.index');
+                Route::get('/admin-kontrak/{uuid}/create', 'create')->name('admin-kontrak.create');
+                Route::post('admini-store', 'store')->name('admin-kontrak.store');
+                Route::get('/admin-kontrak/{uuid}/edit', 'edit')->name('admin-kontrak.edit');
+                Route::get('/admin-kontrak/seksi/{uuid}/filter', 'filter')->name('admin-kontrak.filter');
+                Route::put('/admin-kontrak/{uuid}/update', 'update')->name('admin-kontrak.update');
+                Route::delete('/admin-kontrak-delete', 'destroy')->name('admin-kontrak.delete');
+            });
+
+            Route::controller(SuperadminGudangUtamaController::class)->group(function () {
+                Route::get('/admin-gudang-utama/seksi/{uuid}', 'admin_index')->name('admin.gudang-utama');
+                Route::get('/admin-gudang-utama/{uuid}/create', 'admin_create')->name('admin.gudang-utama.create');
+                Route::post('/admin/gudang-utama/{uuid}/store', 'admin_store')->name('admin.gudang-utama.store');
+                Route::get('/admin-gudang-utama/{uuid}/edit', 'admin_edit')->name('admin.gudang-utama.edit');
+                Route::put('/admin-gudang-utama/{uuid}/update', 'admin_update')->name('admin.gudang-utama.update');
+                Route::get('/admin-gudang-utama/filter', 'admin_filter')->name('aset.gudang-utama.filter');
+                Route::get('/admin-gudang-pulau', 'kasi_gudang_pulau')->name('aset.gudang-pulau');
+                Route::get('/admin-gudang-pulau/filter', 'kasi_gudang_pulau_filter')->name('aset.gudang-pulau.filter');
+                Route::get('/admin-gudang-pulau-trans', 'kasi_gudang_pulau_trans')->name('aset.gudang-pulau-trans');
+            });
+
+            Route::controller(SuperadminShippingController::class)->group(function () {
+                Route::get('/admin-pengiriman/seksi/{uuid}', 'index_pengiriman')->name('admin.pengiriman.index');
+                Route::get('/admin-pengiriman-create', 'create_pengiriman')->name('admin.pengiriman.create');
+                Route::post('/admin-pengiriman/{uuid}/store', 'store_pengiriman')->name('admin.pengiriman.store');
+                Route::get('/admin-pengiriman/{no_resi}/detail', 'show_pengiriman')->name('admin.pengiriman.show');
+                Route::get('/admin-pengiriman/generate-BAST', 'generateBAST')->name('admin.pengiriman.BAST');
+                Route::get('/admin-pengiriman/filter', 'filter_pengiriman')->name('admin.pengiriman.filter');
+                Route::put('/admin-pengiriman-barang/terima', 'terima')->name('admin-barang.terima');
+                Route::put('/admin-pengiriman-barang/{id}/photo-terima', 'photoTerima')->name('admin-barang.photo.terima');
+            });
+            Route::get('/debug/koordinator/{seksi_id}/{pulau_id}', [SuperadminShippingController::class, 'debugKoordinator']);
+
         });
     });
 });
