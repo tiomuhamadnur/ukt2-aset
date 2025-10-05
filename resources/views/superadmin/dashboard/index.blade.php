@@ -10,7 +10,7 @@
     <div class="page-header">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">Superadmin</li>
-            <li class="breadcrumb-item active">Dashboard</li>
+            <li class="breadcrumb-item active">Dashboard Tahun {{ $year }}</li>
         </ol>
     </div>
 @endsection
@@ -23,7 +23,7 @@
                     <i class="icon-user"></i>
                 </div>
                 <div class="sale-num">
-                    <h4>250</h4>
+                    <h4>{{ number_format($jumlah_kontrak, 0, ',', '.') }}</h4>
                     <p>Total Kontrak</p>
                 </div>
             </div>
@@ -34,8 +34,8 @@
                     <i class="icon-user-minus"></i>
                 </div>
                 <div class="sale-num">
-                    <h4>0</h4>
-                    <p>Transaksi Hari Ini</p>
+                    <h4>{{ number_format($pengiriman_hari_ini, 0, ',', '.') }}</h4>
+                    <p>Pengiriman Hari Ini</p>
                 </div>
             </div>
         </div>
@@ -45,8 +45,8 @@
                     <i class="icon-shopping-bag1"></i>
                 </div>
                 <div class="sale-num">
-                    <h4>250</h4>
-                    <p>Gudang Utama</p>
+                    <h4>{{ number_format($stock_gudang_utama, 0, ',', '.') }}</h4>
+                    <p>Barang Stock di Gudang Utama</p>
                 </div>
             </div>
         </div>
@@ -56,8 +56,8 @@
                     <i class="icon-activity"></i>
                 </div>
                 <div class="sale-num">
-                    <h4>12</h4>
-                    <p>Monitoring Stock</p>
+                    <h4>{{ number_format($stock_habis_gudang_utama, 0, ',', '.') }}</h4>
+                    <p>Barang Habis di Gudang Utama</p>
                 </div>
             </div>
         </div>

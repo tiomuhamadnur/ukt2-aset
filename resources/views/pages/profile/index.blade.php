@@ -26,11 +26,11 @@
                     </div>
                 </a>
                 <h4>{{ auth()->user()->name }}</h4>
-                <h5>{{ auth()->user()->nip }}</h5>
+                <h5>{{ auth()->user()->nip ?? '-' }}</h5>
                 <br>
-                <h5>Seksi {{ auth()->user()->struktur->seksi->name }}</h5>
-                {{-- <h5>{{ auth()->user()->struktur->tim->name }}</h5> --}}
-                <p>Pulau {{ auth()->user()->area->pulau->name }}</p>
+                <h5>Seksi {{ auth()->user()->struktur->seksi->name ?? 'N/A' }}</h5>
+                <p>Pulau {{ auth()->user()->area->pulau->name ?? 'N/A' }}</p>
+                <h5>Sisa Cuti Anda: {{ $sisa_cuti }} </h5>
             </div>
         </div>
         <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 col-12">
@@ -62,22 +62,22 @@
                             <div class="form-group">
                                 <label for="seksi">Seksi</label>
                                 <input type="text" class="form-control" id="pulau" placeholder="Seksi"
-                                    value="{{ auth()->user()->struktur->seksi->name }}" disabled>
+                                    value="{{ auth()->user()->struktur->seksi->name ?? 'N/A' }}" disabled>
                             </div>
                             <div class="form-group">
                                 <label for="ciTy">Jabatan</label>
-                                <input type="koordinator" class="form-control" id="pulau" placeholder="Koordinator"
-                                    value="{{ auth()->user()->jabatan->name }}" disabled>
+                                <input type="koordinator" class="form-control" id="pulau" placeholder="Jabatan"
+                                    value="{{ auth()->user()->jabatan->name ?? 'N/A' }}" disabled>
                             </div>
                             <div class="form-group">
                                 <label for="pulau">Tempat Bertugas</label>
                                 <input type="text" class="form-control" id="pulau" placeholder="Pulau"
-                                    value="Pulau {{ auth()->user()->area->pulau->name }}" disabled>
+                                    value="Pulau {{ auth()->user()->area->pulau->name ?? '-' }}" disabled>
                             </div>
                         </div>
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="text-right">
-                                <button type="button" id="submit" name="submit" class="btn btn-primary">Kirim
+                                <button type="button" id="submit" name="submit" class="btn btn-primary">Simpan
                                     Perubahan</button>
                                 <a href="{{ route('user.profile.edit.password') }}" class="btn btn-warning">Ubah
                                     Password</a>
@@ -89,7 +89,8 @@
             </div>
         </div>
     </div>
-    <div class="row gutters">
+    </div>
+    {{-- <div class="row gutters">
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-12">
             <div class="info-stats4">
                 <div class="info-icon">
@@ -101,7 +102,7 @@
                 </div>
             </div>
         </div>
-        {{-- <div class="col-xl-6 col-lg-3 col-md-6 col-sm-6 col-12">
+        <div class="col-xl-6 col-lg-3 col-md-6 col-sm-6 col-12">
             <div class="info-stats4">
                 <div class="info-icon">
                     <i class="icon-activity"></i>
@@ -115,8 +116,8 @@
                     </div>
                 </div>
             </div>
-        </div> --}}
-    </div>
+        </div>
+    </div> --}}
 
     {{-- BEGIN: Update Photo Profil --}}
     <div id="formPhotoProfilModal" class="modal" tabindex="-1" aria-hidden="true">
@@ -140,8 +141,8 @@
                             @method('put')
                             <div class="form-group">
                                 <label for="">Photo Profil</label>
-                                <input type="file" id="imageInput" name="photo" class="form-control"
-                                    accept="image/*" required>
+                                <input type="file" id="imageInput" name="photo" class="form-control" accept="image/*"
+                                    required>
                             </div>
                         </form>
                     </div>

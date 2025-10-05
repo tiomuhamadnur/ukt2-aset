@@ -116,9 +116,9 @@
 
                             <!-- Preview foto lama -->
                             @if ($barang->photo)
-                                <div class="d-flex flex-wrap mb-2">
+                                <div class="d-flex flex-wrap mb-2 preview-container">
                                     @foreach (json_decode($barang->photo, true) as $foto)
-                                        <img src="{{ asset('storage/' . $foto) }}" width="100" class="mr-2 mb-2 border">
+                                        <img src="{{ asset('storage/' . $foto) }}" width="100" class="img-thumbnail mr-2 mb-2 border">
                                     @endforeach
                                 </div>
                             @endif
@@ -160,8 +160,8 @@
                         const previewImage = document.createElement('img');
                         previewImage.className = 'preview-image';
                         previewImage.src = e.target.result;
-                        previewImage.style = 'width: 120px;';
-                        previewImage.className = 'img-thumbnail btn-group mt-2 me-2 d-inline-flex';
+                        previewImage.style = 'width: 100px;';
+                        previewImage.className = 'img-thumbnail mr-2 mb-2 border';
 
                         previewContainer.appendChild(previewImage);
                     }

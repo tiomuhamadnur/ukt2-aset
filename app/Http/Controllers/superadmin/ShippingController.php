@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\superadmin;
 
+use App\DataTables\DetailPengirimanBarangDataTable;
+use App\DataTables\PengirimanBarangDataTable;
 use App\Models\User;
 use App\Models\Seksi;
 use App\Models\Barang;
@@ -21,53 +23,48 @@ use Illuminate\Support\Facades\Storage;
 class ShippingController extends Controller
 {
     // SUPERADMIN
-    public function index_pengiriman(Request $request, string $uuid)
+    public function index_pengiriman(PengirimanBarangDataTable $dataTable, Request $request, string $uuid)
     {
-        $seksi   = Seksi::where('uuid', $uuid)->firstOrFail();
-        $seksi_id = $seksi->id;
-
-        $perPage = $request->perPage ?? 50;
-        $sort    = $request->sort ?? 'DESC';
-
-        $pengiriman_barang = PengirimanBarang::select(
-            'no_resi',
-            'submitter_id',
-            'receiver_id',
-            'gudang_id',
-            'tanggal_kirim',
-            'tanggal_terima',
-            'catatan',
-            'status'
-        )
-            ->whereRelation('barang.kontrak', 'seksi_id', '=', $seksi_id)
-            ->distinct()
-            ->orderBy('tanggal_kirim', $sort)
-            ->paginate($perPage)
-            ->appends($request->all());
-
-        $gudang_pulau = Gudang::orderBy('name', 'ASC')->get();
-        $gudang_id    = '';
-        $status       = '';
-        $start_date   = '';
-        $end_date     = '';
-
-        return view('superadmin.shipping.index', [
-            'pengiriman_barang' => $pengiriman_barang,
-            'gudang_pulau'      => $gudang_pulau,
-            'sort'              => $sort,
-            'gudang_id'         => $gudang_id,
-            'status'            => $status,
-            'start_date'        => $start_date,
-            'end_date'          => $end_date,
-            'seksi'             => $seksi,
+        $request->validate([
+            'gudang_id' => 'nullable|exists:gudang,id',
+            'status' => 'nullable|string',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
+
+        $seksi   = Seksi::where('uuid', $uuid)->firstOrFail();
+
+        $sekarang = Carbon::now();
+        $start_date = $request->start_date ?? $sekarang->startOfYear()->format('Y-m-d');
+        $end_date   = $request->end_date ?? $sekarang->endOfYear()->format('Y-m-d');
+        $gudang_id = $request->gudang_id;
+        $status = $request->status;
+
+        $gudang_pulau = Gudang::orderBy('name', 'asc')->get();
+
+        return $dataTable->with([
+            'seksi_id' => $seksi->id,
+            'gudang_id' => $gudang_id,
+            'status' => $status,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+        ])->render('superadmin.shipping.index', compact([
+            'seksi',
+            'gudang_pulau',
+            'gudang_id',
+            'status',
+            'start_date',
+            'end_date',
+        ]));
     }
 
 
     public function create_pengiriman(Request $request)
     {
         $request->validate([
-            'barang_id' => 'array|required'
+            'barang_id' => 'required|array|max:20', // maksimal 20 barang
+        ], [
+            'barang_id.max' => 'Jumlah barang tidak boleh lebih dari :max item dalam 1 batch pengiriman.',
         ]);
 
         $barangAll = $request->barang_id;
@@ -109,10 +106,76 @@ class ShippingController extends Controller
         ));
     }
 
+    // public function store_pengiriman(Request $request, string $uuid)
+    // {
+    //     $request->validate([
+    //         'photo.*'       => 'required|image|max:2048',
+    //         'submitter_id'  => 'required|exists:users,id',
+    //         'tanggal_kirim' => 'required|date',
+    //         'gudang_id'     => 'required|exists:gudang,id',
+    //         'barang_id.*'   => 'required|exists:barang,id',
+    //         'qty.*'         => 'required|numeric|min:1',
+    //     ]);
+
+    //     $submitter_id  = $request->submitter_id;
+    //     $tanggal_kirim = $request->tanggal_kirim;
+    //     $gudang_id     = $request->gudang_id;
+    //     $barang_ids    = $request->barang_id;
+    //     $qty           = $request->qty;
+    //     $photos        = $request->file('photo');
+    //     $catatan       = $request->catatan;
+    //     $no_resi       = $this->generateNoResi();
+
+    //     // jalankan transaksi
+    //     DB::transaction(function () use ($barang_ids, $qty, $photos, $submitter_id, $tanggal_kirim, $gudang_id, $catatan, $no_resi) {
+    //         foreach ($barang_ids as $key => $barang_id) {
+    //             $file = $photos[$key];
+    //             $image = Image::make($file);
+
+    //             $imageName = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
+    //             $detailPath = 'asset/photo_pengiriman/';
+    //             $destinationPath = storage_path('app/public/' . $detailPath);
+
+    //             if (!file_exists($destinationPath)) {
+    //                 mkdir($destinationPath, 0777, true);
+    //             }
+
+    //             $image->resize(null, 300, function ($constraint) {
+    //                 $constraint->aspectRatio();
+    //             });
+
+    //             $image->save($destinationPath . $imageName);
+    //             $photo_kirim = $detailPath . $imageName;
+
+    //             PengirimanBarang::create([
+    //                 'no_resi'       => $no_resi,
+    //                 'submitter_id'  => $submitter_id,
+    //                 'gudang_id'     => $gudang_id,
+    //                 'barang_id'     => $barang_id,
+    //                 'qty'           => $qty[$key],
+    //                 'photo_kirim'   => $photo_kirim,
+    //                 'tanggal_kirim' => $tanggal_kirim,
+    //                 'catatan'       => $catatan,
+    //                 'status'        => 'Dikirim',
+    //             ]);
+
+    //             $barang = Barang::findOrFail($barang_id);
+    //             $barang->decrement('stock_aktual', $qty[$key]);
+    //         }
+    //     });
+
+    //     $seksi = Seksi::where('uuid', $uuid)->firstOrFail();
+
+    //     return redirect()->route('admin.pengiriman.index', $seksi->uuid)
+    //         ->withNotify('Data pengiriman barang berhasil disimpan');
+    // }
+
+
     public function store_pengiriman(Request $request, string $uuid)
     {
         $request->validate([
-            'photo.*'       => 'required|image|max:2048',
+            'photo'         => 'nullable|array|max:20', // maksimal 20 foto
+            'photo.*'       => 'nullable|image|max:2048', // tiap foto max 2 MB
             'submitter_id'  => 'required|exists:users,id',
             'tanggal_kirim' => 'required|date',
             'gudang_id'     => 'required|exists:gudang,id',
@@ -120,35 +183,42 @@ class ShippingController extends Controller
             'qty.*'         => 'required|numeric|min:1',
         ]);
 
+        // tambahan validasi manual: jumlah foto tidak boleh lebih dari jumlah barang
+        if ($request->has('photo') && count($request->photo) > count($request->barang_id)) {
+            return back()->withErrors(['photo' => 'Jumlah foto tidak boleh lebih dari jumlah barang.']);
+        }
+
         $submitter_id  = $request->submitter_id;
         $tanggal_kirim = $request->tanggal_kirim;
         $gudang_id     = $request->gudang_id;
         $barang_ids    = $request->barang_id;
         $qty           = $request->qty;
-        $photos        = $request->file('photo');
+        $photos        = $request->file('photo') ?? [];
         $catatan       = $request->catatan;
         $no_resi       = $this->generateNoResi();
 
-        // jalankan transaksi
         DB::transaction(function () use ($barang_ids, $qty, $photos, $submitter_id, $tanggal_kirim, $gudang_id, $catatan, $no_resi) {
             foreach ($barang_ids as $key => $barang_id) {
-                $file = $photos[$key];
-                $image = Image::make($file);
+                $photo_kirim = null;
+                if (isset($photos[$key]) && $photos[$key]->isValid()) {
+                    $file = $photos[$key];
+                    $image = Image::make($file);
 
-                $imageName = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
-                $detailPath = 'asset/photo_pengiriman/';
-                $destinationPath = storage_path('app/public/' . $detailPath);
+                    $imageName = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
+                    $detailPath = 'asset/photo_pengiriman/';
+                    $destinationPath = storage_path('app/public/' . $detailPath);
 
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0777, true);
+                    }
+
+                    $image->resize(null, 300, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+
+                    $image->save($destinationPath . $imageName);
+                    $photo_kirim = $detailPath . $imageName;
                 }
-
-                $image->resize(null, 500, function ($constraint) {
-                    $constraint->aspectRatio();
-                });
-
-                $image->save($destinationPath . $imageName);
-                $photo_kirim = $detailPath . $imageName;
 
                 PengirimanBarang::create([
                     'no_resi'       => $no_resi,
@@ -174,19 +244,20 @@ class ShippingController extends Controller
     }
 
 
-    public function show_pengiriman($no_resi)
+    public function show_pengiriman(DetailPengirimanBarangDataTable $dataTable, $no_resi)
     {
-        $pengiriman_barang = PengirimanBarang::where('no_resi', $no_resi)->get();
+        $pengiriman_barang = PengirimanBarang::where('no_resi', $no_resi)->first();
         $validasiBAST = PengirimanBarang::where('no_resi', $no_resi)->where('status', 'Dikirim')->count();
         $nomor_resi = $no_resi;
 
-        $seksi = optional($pengiriman_barang->first()->barang->kontrak->seksi);
+        $seksi = optional($pengiriman_barang->barang->kontrak->seksi);
 
-        return view('superadmin.shipping.detail_shipping', compact([
-            'pengiriman_barang',
+        return $dataTable->with([
+            'no_resi' => $nomor_resi,
+        ])->render('superadmin.shipping.detail_shipping', compact([
+            'seksi',
             'validasiBAST',
             'nomor_resi',
-            'seksi',
         ]));
     }
 
@@ -288,8 +359,16 @@ class ShippingController extends Controller
     {
         $request->validate([
             'tanggal_terima' => 'required|date',
-            'photo'   => 'nullable|array|max:3',
-            'photo.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'photo'          => 'nullable|array|max:3',
+            'photo.*'        => 'image|mimes:jpg,jpeg,png|max:2048', // 2048 KB = 2 MB
+        ], [
+            'tanggal_terima.required' => 'Tanggal terima wajib diisi.',
+            'tanggal_terima.date'     => 'Format tanggal terima tidak valid.',
+            'photo.array'             => 'Foto harus berbentuk array.',
+            'photo.max'               => 'Maksimal 3 foto yang bisa diunggah.',
+            'photo.*.image'           => 'File harus berupa gambar.',
+            'photo.*.mimes'           => 'Format gambar harus JPG, JPEG, atau PNG.',
+            'photo.*.max'             => 'Ukuran setiap foto maksimal 2 MB.',
         ]);
 
         $pengirimanBarang = PengirimanBarang::with('barang.kontrak', 'gudang')->findOrFail($id);
@@ -300,10 +379,11 @@ class ShippingController extends Controller
         $koordinator = FormasiTim::whereHas('struktur', function ($q) use ($seksi_id) {
             $q->where('seksi_id', $seksi_id);
         })
-            ->whereHas('area', function ($q) use ($pulau_id) {
-                $q->where('pulau_id', $pulau_id);
-            })
-            ->first();
+        ->whereHas('area', function ($q) use ($pulau_id) {
+            $q->where('pulau_id', $pulau_id);
+        })
+        ->orderBy('periode', 'desc')
+        ->first();
 
         if (!$koordinator) {
             return back()->withError('Koordinator tidak ditemukan.');
@@ -312,16 +392,34 @@ class ShippingController extends Controller
         $lampiranPaths = [];
 
         if ($request->hasFile('photo')) {
+            // hapus foto lama
             if ($pengirimanBarang->photo_terima) {
                 foreach (json_decode($pengirimanBarang->photo_terima, true) as $oldPhoto) {
                     Storage::disk('public')->delete($oldPhoto);
                 }
             }
 
+            // resize & compress setiap foto
             foreach ($request->file('photo') as $file) {
+                $image = Image::make($file);
+
                 $imageName = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('asset/photo_penerimaan', $imageName, 'public');
-                $lampiranPaths[] = $path;
+                $detailPath = 'asset/photo_penerimaan/';
+                $destinationPath = storage_path('app/public/' . $detailPath);
+
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+
+                // resize tinggi 300px, lebar proporsional
+                $image->resize(null, 300, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+
+                // simpan dengan quality 75% (kompres)
+                $image->save($destinationPath . $imageName, 75);
+
+                $lampiranPaths[] = $detailPath . $imageName;
             }
         }
 
@@ -334,4 +432,5 @@ class ShippingController extends Controller
 
         return back()->withNotify('Data photo penerimaan barang berhasil disimpan');
     }
+
 }

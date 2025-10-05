@@ -29,7 +29,7 @@
                         <div class="actual-form">
                             <div class="input-wrap">
                                 <input type="text" minlength="4" name="email" class="input-field"
-                                    autocomplete="off" placeholder="Masukkan Email" required autofocus />
+                                    placeholder="Masukkan Email" required autofocus />
                             </div>
                             @error('email')
                                 <span class="badge bg-danger p-2 mb-3" role="alert">

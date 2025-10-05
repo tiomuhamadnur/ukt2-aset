@@ -544,6 +544,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::middleware('KepalaSeksi')->group(function () {
             Route::get('/aset-pengiriman', 'index_pengiriman')->name('aset.pengiriman.index');
             Route::get('/aset-pengiriman-create', 'create_pengiriman')->name('aset.pengiriman.create');
+            Route::get('/aset-pengiriman-create/get-all-barang', 'getAllBarang')->name('aset.pengiriman.get.all.barang');
             Route::post('/aset-pengiriman', 'store_pengiriman')->name('aset.pengiriman.store');
             Route::get('/aset-pengiriman/{no_resi}/detail', 'show_pengiriman')->name('aset.pengiriman.show');
             Route::get('/aset-pengiriman/generate-BAST', 'generateBAST')->name('aset.pengiriman.BAST');
@@ -578,6 +579,7 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::get('/admin-gudang-utama/{uuid}/edit', 'admin_edit')->name('admin.gudang-utama.edit');
                 Route::put('/admin-gudang-utama/{uuid}/update', 'admin_update')->name('admin.gudang-utama.update');
                 Route::get('/admin-gudang-utama/filter', 'admin_filter')->name('aset.gudang-utama.filter');
+                Route::delete('/admin-gudang-barang-delete', 'destroy')->name('admin.gudang-utama.delete');
                 Route::get('/admin-gudang-pulau', 'kasi_gudang_pulau')->name('aset.gudang-pulau');
                 Route::get('/admin-gudang-pulau/filter', 'kasi_gudang_pulau_filter')->name('aset.gudang-pulau.filter');
                 Route::get('/admin-gudang-pulau-trans', 'kasi_gudang_pulau_trans')->name('aset.gudang-pulau-trans');

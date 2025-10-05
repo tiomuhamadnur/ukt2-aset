@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\superadmin;
 
+use App\DataTables\KontrakDataTable;
 use App\Models\Seksi;
 use App\Models\Kontrak;
 use Illuminate\Http\Request;
@@ -11,39 +12,29 @@ use Illuminate\Support\Facades\Storage;
 
 class KontrakController extends Controller
 {
-    public function index(Request $request, string $uuid)
+    public function index(KontrakDataTable $dataTable, Request $request, string $uuid)
     {
-        $sort       = $request->get('sort', 'ASC');
-        $tahun      = now()->year;
-        $perPage    = $request->integer('perPage', 50);
+        $request->validate([
+            'periode' => 'nullable|numeric',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
 
-        $start_date = $request->get('start_date');
-        $end_date   = $request->get('end_date');
+        $sekarang = Carbon::now();
+        $start_date = $request->start_date ?? $sekarang->startOfYear()->format('Y-m-d');
+        $end_date   = $request->end_date ?? $sekarang->endOfYear()->format('Y-m-d');
 
         $seksi = Seksi::where('uuid', $uuid)->firstOrFail();
 
-        $kontrak = Kontrak::where('seksi_id', $seksi->id)
-            ->when($start_date && $end_date, function ($query) use ($start_date, $end_date) {
-                $query->whereBetween('tanggal', [$start_date, $end_date]);
-            })
-            ->when($start_date && !$end_date, function ($query) use ($start_date) {
-                $query->whereDate('tanggal', '>=', $start_date);
-            })
-            ->when($end_date && !$start_date, function ($query) use ($end_date) {
-                $query->whereDate('tanggal', '<=', $end_date);
-            })
-            ->orderBy('tanggal', $sort)
-            ->paginate($perPage)
-            ->appends($request->all());
-
-        return view('superadmin.kontrak.index', [
-            'kontrak'    => $kontrak,
-            'sort'       => $sort,
-            'tahun'      => $tahun,
-            'seksi'      => $seksi,
+        return $dataTable->with([
+            'seksi_id' => $seksi->id,
             'start_date' => $start_date,
-            'end_date'   => $end_date,
-        ]);
+            'end_date' => $end_date,
+        ])->render('superadmin.kontrak.index', compact([
+            'seksi',
+            'start_date',
+            'end_date',
+        ]));
     }
 
     public function create(string $uuid)
@@ -55,27 +46,25 @@ class KontrakController extends Controller
 
     public function store(Request $request)
     {
+        $rawData = $request->validate([
+            'name'         => 'required|string',
+            'no_kontrak'   => 'required|string',
+            'nilai_kontrak' => 'required|numeric|min:0',
+            'tanggal'      => 'required|date',
+            'seksi_id'     => 'required|exists:seksi,id',
+        ]);
+
         $request->validate(
             [
-                'name'         => 'required',
-                'no_kontrak'   => 'required',
-                'nilai_kontrak' => 'required',
-                'tanggal'      => 'required|date',
-                'seksi_id'     => 'required|exists:seksi,id',
-                'lampiran'     => 'nullable|file|mimes:pdf|max:1024',
+                'lampiran' => 'nullable|file|mimes:pdf|max:1024',
             ],
             [
-                'lampiran.max' => 'Ukuran file lampiran maksimal 1 MB',
-            ],
+                'lampiran.mimes' => 'Lampiran harus berupa file PDF',
+                'lampiran.max'   => 'Ukuran file lampiran maksimal 1 MB',
+            ]
         );
 
-        $kontrak = Kontrak::create([
-            'name'          => $request->name,
-            'no_kontrak'    => $request->no_kontrak,
-            'nilai_kontrak' => $request->nilai_kontrak,
-            'tanggal'       => $request->tanggal,
-            'seksi_id'      => $request->seksi_id,
-        ]);
+        $kontrak = Kontrak::updateOrCreate($rawData, $rawData);
 
         if ($request->hasFile('lampiran')) {
             $lampiran = $request->file('lampiran')->store('kontrak/lampiran', 'public');
@@ -98,27 +87,36 @@ class KontrakController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $uuid)
     {
-        $request->validate([
+        $rawData = $request->validate([
             'name'          => 'required|string|max:255',
             'no_kontrak'    => 'required|string|max:255',
-            'nilai_kontrak' => 'required|numeric',
+            'nilai_kontrak' => 'required|numeric|min:0',
             'tanggal'       => 'required|date',
         ]);
 
-        $kontrak = Kontrak::findOrFail($id);
-        $kontrak->update([
-            'name'          => $request->name,
-            'no_kontrak'    => $request->no_kontrak,
-            'nilai_kontrak' => $request->nilai_kontrak,
-            'tanggal'       => $request->tanggal,
+        $request->validate([
+            'lampiran'     => 'nullable|file|mimes:pdf|max:1024',
+        ],
+        [
+            'lampiran.max' => 'Ukuran file lampiran maksimal 1 MB',
         ]);
 
-        $seksi = $kontrak->seksi;
+        $kontrak = Kontrak::where('uuid',$uuid)->firstOrFail();
+
+        $kontrak->update($rawData);
+
+        if ($request->hasFile('lampiran')) {
+            if ($kontrak->lampiran && Storage::disk('public')->exists($kontrak->lampiran)) {
+                Storage::disk('public')->delete($kontrak->lampiran);
+            }
+            $lampiran = $request->file('lampiran')->store('kontrak/lampiran', 'public');
+            $kontrak->update(['lampiran' => $lampiran]);
+        }
 
         return redirect()
-            ->route('admin-kontrak.index', $seksi->uuid)
+            ->route('admin-kontrak.index', $kontrak->seksi->uuid)
             ->withNotify('Data berhasil diubah!');
     }
 
@@ -160,21 +158,19 @@ class KontrakController extends Controller
     {
         $kontrak = Kontrak::findOrFail($request->id);
 
-        $seksi = $kontrak->seksi;
-
-        if (!is_null($kontrak->lampiran)) {
-            Storage::disk('public')->delete($kontrak->lampiran);
-        }
-
         if ($kontrak->canBeDeleted()) {
+            if (!is_null($kontrak->lampiran && Storage::disk('public')->exists($kontrak->lampiran))) {
+                Storage::disk('public')->delete($kontrak->lampiran);
+            }
+
             $kontrak->delete();
             return redirect()
-                ->route('admin-kontrak.index', $seksi->uuid)
+                ->route('admin-kontrak.index', $kontrak->seksi->uuid)
                 ->withNotify('Data berhasil dihapus!');
         }
 
         return redirect()
-            ->route('admin-kontrak.index', $seksi->uuid)
+            ->route('admin-kontrak.index', $kontrak->seksi->uuid)
             ->withError('Data tidak dapat dihapus karena masih terkait dengan data lain!');
     }
 }

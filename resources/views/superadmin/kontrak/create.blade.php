@@ -43,7 +43,7 @@
                         </div>
                         <div class="form-group">
                             <input type="number" class="form-control" name="nilai_kontrak"
-                                placeholder="Nilai Kontrak (Rp.)" required autocomplete="off">
+                                placeholder="Nilai Kontrak (Rp.)" required autocomplete="off" min="0">
                         </div>
                         <div class="form-group">
                             <input type="date" placeholder="Tanggal Kontrak" onblur="(this.type='text')"

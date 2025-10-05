@@ -26,7 +26,7 @@
                     <div class="row d-flex justify-content-between align-items-center">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-3 text-left">
                             <div class="d-flex justify-content-start align-items-center flex-wrap">
-                                <a href="{{ route('aset.kasi.index') }}"
+                                <a href="{{ route('dashboard.index') }}"
                                     class="btn btn-outline-primary mr-2 mb-2 mb-sm-0"><i class="fa fa-arrow-left"></i>
                                     Kembali</a>
                                 <a href="{{ route('admin.gudang-utama.create', $seksi->uuid) }}"
@@ -38,26 +38,20 @@
                                 </button>
                                 <a href="javascript:;" class="btn btn-primary mr-2 mb-2 mb-sm-0" data-toggle="modal"
                                     data-target="#modalFilter" title="Filter"><i class="fa fa-filter"></i></a>
-                                <a href="{{ route('aset.gudang-utama') }}" class="btn btn-primary mr-2 mb-2 mb-sm-0"
-                                    title="Reset Filter">
+                                <a href="{{ route('admin.gudang-utama', $seksi->uuid) }}"
+                                    class="btn btn-primary mr-2 mb-2 mb-sm-0" title="Reset Filter">
                                     <i class="fa fa-refresh"></i>
                                 </a>
                             </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <form class="form-inline mb-2 d-flex justify-content-end">
-                                <input class="form-control mr-sm-2" type="search" placeholder="Cari sesuatu di sini..."
-                                    aria-label="Search" id="search-bar">
-                                <button class="btn btn-dark my-2 my-sm-0" type="submit">Pencarian</button>
-                            </form>
-                        </div>
                     </div>
                     <div class="row container">
-                        <p>Note: Untuk bisa memilih barang, wajib mengupload photo barang terlebih dahulu dan juga ketika
+                        <p><span class="font-weight-bolder">Note:</span> Untuk bisa memilih barang, wajib mengupload photo
+                            barang terlebih dahulu dan juga ketika
                             stock
                             aktual barang tersedia.</p>
                     </div>
-                    <div class="table-responsive">
+                    {{-- <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="dataTable">
                             <thead>
                                 <tr>
@@ -75,10 +69,10 @@
                                     <th class="text-center">Merk Barang</th>
                                     <th class="text-center">Jenis Barang</th>
                                     <th class="text-center">Harga <br> (Termasuk PPN)</th>
-                                    {{-- <th class="text-center">Kode Barang</th> --}}
+                                    <th class="text-center">Kode Barang</th>
                                     <th class="text-center">Stock Awal</th>
                                     <th class="text-center">Stock Aktual</th>
-                                    {{-- <th class="text-center">Harga Barang</th> --}}
+                                    <th class="text-center">Harga Barang</th>
                                     <th class="text-center">Spesifikasi Barang</th>
                                     <th class="text-center">Aksi</th>
                                 </tr>
@@ -107,10 +101,10 @@
                                             <td class="text-center">{{ $item->merk }}</td>
                                             <td class="text-center">{{ $item->jenis }}</td>
                                             <td class="text-center">{{ formatRupiah($item->harga, true) }}</td>
-                                            {{-- <td class="text-center">{{ $item->code }}</td> --}}
+                                            <td class="text-center">{{ $item->code }}</td>
                                             <td class="text-center">{{ $item->stock_awal }} {{ $item->satuan }}</td>
                                             <td class="text-center">{{ $item->stock_aktual }} {{ $item->satuan }}</td>
-                                            {{-- <td class="text-center">Rp.{{ $item->harga }}</td> --}}
+                                            <td class="text-center">Rp.{{ $item->harga }}</td>
                                             <td class="text-center">{{ $item->spesifikasi }}</td>
                                             <td class="text-center">
                                                 <a href="{{ route('admin.gudang-utama.edit', $item->uuid) }}"
@@ -144,6 +138,15 @@
                                 </form>
                             </tbody>
                         </table>
+                    </div> --}}
+                    <div class="table-responsive">
+                        <form id="form-kirim" action="{{ route('admin.pengiriman.create') }}" method="GET">
+                            @csrf
+                            @method('GET')
+                            {{ $dataTable->table([
+                                'class' => 'table table-bordered table-striped',
+                            ]) }}
+                        </form>
                     </div>
                 </div>
             </div>
@@ -161,12 +164,11 @@
                         <div class="text-slate-500 mt-2">Peringatan: Data ini akan dihapus secara permanent</div>
                     </div>
                     <div class="px-5 pb-8 text-center mt-3">
-                        <form action="{{ route('barang.destroy') }}" method="POST">
+                        <form action="{{ route('admin.gudang-utama.delete') }}" method="POST">
                             @csrf
                             @method('delete')
                             <input type="text" name="id" id="id" hidden>
-                            <button type="button" data-dismiss="modal"
-                                class="btn btn-dark w-24 mr-1 me-2">Batal</button>
+                            <button type="button" data-dismiss="modal" class="btn btn-dark w-24 mr-1 me-2">Batal</button>
                             <button type="submit" class="btn btn-primary w-24">Hapus</button>
                         </form>
                     </div>
@@ -203,10 +205,9 @@
 
 
     {{-- BEGIN: Filter Modal --}}
-    <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <form action="{{ route('aset.gudang-utama.filter') }}" method="GET">
+    <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="{{ route('admin.gudang-utama', $seksi->uuid) }}" method="GET">
                 @csrf
                 @method('GET')
                 <div class="modal-content">
@@ -225,14 +226,15 @@
                                         <option value="" selected disabled>- pilih kontrak -</option>
                                         @foreach ($kontrak as $item)
                                             <option value="{{ $item->id }}"
-                                                @if ($item->id == $kontrak_id) selected @endif>{{ $item->no_kontrak }}
+                                                @if ($item->id == $kontrak_id) selected @endif>
+                                                {{ date('Y', strtotime($item->tanggal)) }}
                                                 - {{ $item->name }}
-                                                - {{ $item->seksi->name }} - ({{ $item->tanggal }})
+                                                - ({{ $item->no_kontrak }})
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                {{-- <div class="form-group">
                                     <label for="periode">Tahun Pengadaan</label>
                                     <select name="periode" class="form-control">
                                         <option value="" selected disabled>- pilih periode pengadaan -</option>
@@ -246,6 +248,23 @@
                                         <option value="{{ $tahun + 3 }}">{{ $tahun + 3 }}</option>
                                         <option value="{{ $tahun + 4 }}">{{ $tahun + 4 }}</option>
                                     </select>
+                                </div> --}}
+                                <div class="form-group">
+                                    <label for="periode">Periode</label>
+                                    <div class="form-row gutters">
+                                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group">
+                                                <input type="date" class="form-control" value="{{ $start_date }}"
+                                                    name="start_date">
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group">
+                                                <input type="date" class="form-control" value="{{ $end_date }}"
+                                                    name="end_date">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="">Jenis Barang</label>
@@ -274,21 +293,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-row gutters">
-                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                        <div class="form-group">
-                                            <label for="">Urutan</label>
-                                            <select name="sort" class="form-control">
-                                                <option value="ASC" @if ($sort == 'ASC') selected @endif>A
-                                                    to Z
-                                                </option>
-                                                <option value="DESC" @if ($sort == 'DESC') selected @endif>Z
-                                                    to A
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -303,6 +307,10 @@
     {{-- END: Filter Modal --}}
 @endsection
 
+@push('scripts')
+    {{ $dataTable->scripts() }}
+@endpush
+
 
 @section('javascript')
     <script type="text/javascript">
@@ -311,36 +319,85 @@
         }
 
         $(document).ready(function() {
-            document.getElementById('checkAll').addEventListener('change', function() {
-                var checkboxes = document.querySelectorAll('.barang-checkbox');
-                checkboxes.forEach(function(checkbox) {
-                    checkbox.checked = this.checked;
-                }, this);
-            });
+            // Menyimpan semua ID barang yang dicentang lintas halaman
+            let selectedItems = new Set();
 
-            var checkboxes = document.querySelectorAll('.barang-checkbox');
-            checkboxes.forEach(function(checkbox) {
-                checkbox.addEventListener('change', function() {
-                    var allChecked = true;
-                    checkboxes.forEach(function(cb) {
-                        if (!cb.checked) {
-                            allChecked = false;
-                        }
-                    });
-                    document.getElementById('checkAll').checked = allChecked;
+            // === Saat "Pilih Semua" di header diklik ===
+            $(document).on('change', '#checkAllGlobal', function() {
+                const isChecked = $(this).is(':checked');
+                $('.barang-checkbox').each(function() {
+                    const id = $(this).val();
+                    $(this).prop('checked', isChecked);
+
+                    if (isChecked) {
+                        selectedItems.add(id);
+                    } else {
+                        selectedItems.delete(id);
+                    }
                 });
+
+                toggleButton();
             });
 
-            $('input[type="checkbox"]').change(function() {
-                var diceklis = $('input[type="checkbox"]:checked').length > 0;
+            // === Saat checkbox per baris diklik ===
+            $(document).on('change', '.barang-checkbox', function() {
+                const id = $(this).val();
 
-                if (diceklis) {
-                    $('#kirimBarangButton').show();
+                if ($(this).is(':checked')) {
+                    selectedItems.add(id);
                 } else {
-                    $('#kirimBarangButton').hide();
+                    selectedItems.delete(id);
                 }
+
+                // Update status checkAllGlobal
+                const totalVisible = $('.barang-checkbox').length;
+                const totalChecked = $('.barang-checkbox:checked').length;
+                $('#checkAllGlobal').prop('checked', totalVisible === totalChecked);
+
+                toggleButton();
             });
 
+            // === Saat tabel reload (misal ganti halaman DataTables) ===
+            $(document).on('draw.dt', function() {
+                $('.barang-checkbox').each(function() {
+                    const id = $(this).val();
+                    $(this).prop('checked', selectedItems.has(id));
+                });
+
+                const totalVisible = $('.barang-checkbox').length;
+                const totalChecked = $('.barang-checkbox:checked').length;
+                $('#checkAllGlobal').prop('checked', totalVisible > 0 && totalVisible === totalChecked);
+            });
+
+            // === Munculkan tombol kirim jika ada yang dipilih ===
+            function toggleButton() {
+                const jumlah = selectedItems.size;
+
+                if (jumlah > 0) {
+                    $('#kirimBarangButton')
+                        .show()
+                        .html(`<i class="fa fa-paper-plane"></i> Kirim Barang (${jumlah} data)`);
+                } else {
+                    $('#kirimBarangButton').hide().html(`
+                <i class="fa fa-paper-plane"></i> Kirim Barang
+            `);
+                }
+            }
+
+            // === Saat tombol "Kirim Barang" ditekan ===
+            $('#form-kirim').on('submit', function(e) {
+                e.preventDefault();
+
+                // Hapus input lama agar tidak dobel
+                $('#form-kirim input[name="barang_id[]"]').remove();
+
+                // Tambahkan semua id yang sudah dicentang (dari semua halaman)
+                selectedItems.forEach(id => {
+                    $(this).append(`<input type="hidden" name="barang_id[]" value="${id}">`);
+                });
+
+                this.submit();
+            });
 
 
 
@@ -351,7 +408,7 @@
                 photoArray.forEach(function(item) {
                     var photoPath = "{{ asset('storage/') }}" + '/' + item;
                     photoHTML +=
-                        '<div class""><img class="img-thumbnail img-fluid" style="width: 400px;" src="' +
+                        '<div class""><img class="img-thumbnail img-fluid" style="width: 300px;" src="' +
                         photoPath + '" alt="photo"></div>';
                 });
 

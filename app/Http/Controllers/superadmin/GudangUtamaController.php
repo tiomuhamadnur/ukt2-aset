@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\superadmin;
 
+use App\DataTables\GudangUtamaDataTable;
 use App\Models\Seksi;
 use App\Models\Barang;
 use App\Models\Gudang;
@@ -20,8 +21,25 @@ use Illuminate\Support\Facades\Storage;
 class GudangUtamaController extends Controller
 {
     // ADMIN
-    public function admin_index(string $uuid)
+    public function admin_index(GudangUtamaDataTable $dataTable, Request $request, string $uuid)
     {
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'kontrak_id' => 'nullable|exists:kontrak,id',
+            'stock' => 'nullable|string',
+            'jenis' => 'nullable|string',
+        ]);
+
+        $sekarang = Carbon::now();
+        $start_date = $request->start_date ?? $sekarang->startOfYear()->format('Y-m-d');
+        $end_date   = $request->end_date ?? $sekarang->endOfYear()->format('Y-m-d');
+        // $start_date = $request->start_date ?? null;
+        // $end_date   = $request->end_date ?? null;
+
+        $kontrak_id = $request->kontrak_id;
+        $stock = $request->stock;
+        $jenis = $request->jenis;
         $seksi = Seksi::where('uuid', $uuid)->firstOrFail();
         $seksi_id = $seksi->id;
 
@@ -31,32 +49,29 @@ class GudangUtamaController extends Controller
             ->orderBy('name', 'DESC')
             ->get();
 
-        $sort = 'DESC';
-
         $gudang_tujuan = Gudang::orderBy('name', 'DESC')->get();
-        $kontrak = Kontrak::where('seksi_id', $seksi_id)->orderBy('tanggal', $sort)->get();
-        $tahun = now()->year;
+        $kontrak = Kontrak::where('seksi_id', $seksi_id)->orderByDesc('tanggal')->get();
+        $tahun = $sekarang->format('Y');
 
-        $jenis = '';
-        $kontrak_id = '';
-        $stock = '';
 
-        $validasiKirimBarangCheckbox = Barang::where('stock_aktual', '>', 0)
-            ->whereRelation('kontrak.seksi', 'id', '=', $seksi_id)
-            ->count();
-
-        return view('superadmin.gudangUtama.index', [
-            'barang'                     => $barang,
-            'gudang_tujuan'              => $gudang_tujuan,
-            'kontrak'                    => $kontrak,
-            'tahun'                      => $tahun,
-            'jenis'                      => $jenis,
-            'stock'                      => $stock,
-            'sort'                       => $sort,
-            'kontrak_id'                 => $kontrak_id,
-            'validasiKirimBarangCheckbox' => $validasiKirimBarangCheckbox,
-            'seksi'                      => $seksi,
-        ]);
+        return $dataTable->with([
+            'seksi_id' => $seksi->id,
+            'kontrak_id' => $kontrak_id,
+            'stock' => $stock,
+            'jenis' => $jenis,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+        ])->render('superadmin.gudangUtama.index', compact([
+            'seksi',
+            'kontrak',
+            'start_date',
+            'end_date',
+            'gudang_tujuan',
+            'tahun',
+            'kontrak_id',
+            'stock',
+            'jenis',
+        ]));
     }
 
     public function admin_create(string $uuid)
@@ -113,6 +128,19 @@ class GudangUtamaController extends Controller
 
     public function admin_update(Request $request, string $uuid)
     {
+        $barang = Barang::where('uuid', $uuid)->firstOrFail();
+        $rawData = $request->validate([
+            'name' => 'required|string',
+            'code' => 'required|string',
+            'merk' => 'required|string',
+            'jenis' => 'required|string',
+            'stock_awal' => 'required|numeric|min:1',
+            'stock_aktual' => 'required|numeric|min:1',
+            'satuan' => 'required|string',
+            'harga' => 'required|numeric|min:1',
+            'spesifikasi' => 'required|string',
+        ]);
+
         $request->validate([
             'photo'   => 'nullable|array|max:3',   // maksimal 3 file
             'photo.*' => 'image|mimes:jpg,jpeg,png|max:2048', // max 2 MB per file
@@ -120,7 +148,6 @@ class GudangUtamaController extends Controller
             'photo.max' => '*Maksimal 3 file photo yang bisa dilampirkan.',
         ]);
 
-        $barang = Barang::where('uuid', $uuid)->firstOrFail();
 
         $barang->update([
             'name'         => $request->input('name'),
@@ -323,6 +350,26 @@ class GudangUtamaController extends Controller
         return view('user.aset.kasi.gudang.transaksi_pulau', compact([
             'transaksi'
         ]));
+    }
+
+
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+        ]);
+
+        $id = $request->id;
+        $barang = Barang::findOrFail($id);
+        if($barang->photo != null)
+        {
+            foreach(json_decode($barang->photo) as $photo)
+            {
+                Storage::delete($photo);
+            }
+        }
+        $barang->forceDelete();
+        return redirect()->back()->withNotify('Data berhasil dihapus!');
     }
 
 

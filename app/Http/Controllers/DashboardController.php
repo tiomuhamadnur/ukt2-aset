@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\data_essentials\MasterGudangController;
 use App\Models\Area;
+use App\Models\Barang;
 use App\Models\EmployeeType;
 use App\Models\FormasiTim;
 use App\Models\Gudang;
@@ -18,6 +19,7 @@ use App\Models\KonfigurasiCuti;
 use App\Models\KonfigurasiGudang;
 use App\Models\Kontrak;
 use App\Models\KontrakBarang;
+use App\Models\PengirimanBarang;
 use Illuminate\Http\Request;
 use App\Models\Provinsi;
 use App\Models\UnitKerja;
@@ -29,6 +31,7 @@ use App\Models\RoleUser;
 use App\Models\Struktur;
 use App\Models\Tim;
 use App\Models\User;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -48,7 +51,34 @@ class DashboardController extends Controller
             return redirect()->route('aset.pjlp.index');
         }
         else {
-            return view('superadmin.dashboard.index');
+            $sekarang = Carbon::now();
+            $year = $sekarang->format('Y');
+            $date = $sekarang->format('Y-d-m');
+            $jumlah_kontrak = Kontrak::whereYear('tanggal', $year)->count();
+            $pengiriman_hari_ini = PengirimanBarang::where('tanggal_kirim', $date)
+                                ->where('status', 'Dikirim')
+                                ->distinct('no_resi')
+                                ->count('no_resi');
+            $stock_gudang_utama = Barang::where('stock_aktual', '>', 0)
+                                ->whereHas('kontrak', function($query) use ($year) {
+                                    $query->whereYear('tanggal', $year);
+                                })
+                                ->where('stock_aktual', '>', 0)
+                                ->count();
+            $stock_habis_gudang_utama = Barang::where('stock_aktual', '=', 0)
+                                ->whereHas('kontrak', function($query) use ($year) {
+                                    $query->whereYear('tanggal', $year);
+                                })
+                                ->where('stock_aktual', '>', 0)
+                                ->count();
+
+            return view('superadmin.dashboard.index', compact([
+                'year',
+                'jumlah_kontrak',
+                'pengiriman_hari_ini',
+                'stock_gudang_utama',
+                'stock_habis_gudang_utama',
+            ]));
         }
     }
 

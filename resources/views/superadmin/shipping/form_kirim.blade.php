@@ -79,7 +79,7 @@
                                                 <td class="text-center">{{ $item->stock_aktual }} {{ $item->satuan }}</td>
                                                 <td class="text-center">
                                                     <input type="number" name="qty[]" class="form-control" min="1"
-                                                        max="{{ $item->stock_aktual }}" placeholder="jumlah" required>
+                                                        max="{{ $item->stock_aktual }}" placeholder="qty" required>
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="preview">
@@ -94,7 +94,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="gudang">Catatan <span class="text-primary">(opsional)</span></label>
+                            <label for="gudang">Catatan <span class="text-info">(opsional)</span></label>
                             <textarea name="catatan" placeholder="Catatan tambahan" class="form-control" rows="3"></textarea>
                         </div>
                         <div class="btn group-button">

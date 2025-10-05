@@ -21,10 +21,10 @@
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="d-flex justify-content-center mb-3 text-center" style="text-decoration: underline">Detail
-                        Shipping Info - (No. Resi: {{ $nomor_resi }})</h4>
                     <h4 class="d-flex justify-content-center mb-3 text-center" style="text-decoration: underline">
-                        Seksi - {{ $seksi->name }}
+                        Detail Pengiriman Barang - Seksi {{ $seksi->name }}</h4>
+                    <h4 class="d-flex justify-content-center mb-3 text-center" style="text-decoration: underline">
+                        No. Resi: {{ $nomor_resi }}
                     </h4>
                     <div class="row d-flex justify-content-between align-items-center">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-3 text-left">
@@ -40,16 +40,9 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <form class="form-inline mb-2 d-flex justify-content-end">
-                                <input class="form-control mr-sm-2" type="search" placeholder="Cari sesuatu di sini..."
-                                    aria-label="Search" id="search-bar">
-                                <button class="btn btn-dark my-2 my-sm-0" type="submit">Pencarian</button>
-                            </form>
-                        </div>
                     </div>
-                    <div class="table-responsive">
-                        <p>NOTE: Generate BAST hanya bisa dilakukan ketika data dokumentasi & penerimaan lengkap.</p>
+                    <p><span class="font-weight-bold">NOTE</span>: Generate BAST hanya bisa dilakukan ketika data dokumentasi & penerimaan lengkap.</p>
+                    {{-- <div class="table-responsive">
                         <table class="table table-bordered table-striped" id="dataTable">
                             <thead>
                                 <tr>
@@ -124,6 +117,11 @@
                                 </form>
                             </tbody>
                         </table>
+                    </div> --}}
+                    <div class="table-responsive">
+                        {{ $dataTable->table([
+                            'class' => 'table table-bordered table-striped',
+                        ]) }}
                     </div>
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-3 text-right">
                         <button style="display: none;" id="konfirmasiPenerimaanButton" class="btn btn-primary"
@@ -213,7 +211,7 @@
     {{-- BEGIN: Photo Terima Modal --}}
     <div class="modal fade" id="modalPhotoTerima" tabindex="-1" role="dialog" aria-labelledby="modalPhotoTerima"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Photo Barang Bukti Terima</h5>
@@ -221,7 +219,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body d-flex justify-content-center">
+                <div class="modal-body">
                     <form id="formPhotoTerima" action="#" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
@@ -230,13 +228,11 @@
                             <label for="tanggal_terima">Tanggal Penerimaan</label>
                             <input type="date" class="form-control" name="tanggal_terima" required>
                         </div>
-
                         <div class="form-group">
-                            <label for="name">Photo Barang <span class="text-secondary">(*max: 3 photo)</span></label>
-                            <div class="row-group d-flex preview-container my-2"></div>
-                            <input type="file" class="form-control image-input" name="photo[]" accept="image/*"
-                                required multiple>
-                        </div>
+                        <label for="name">Photo Barang <span class="text-secondary">(*max: 3 photo)</span></label>
+                        <div class="row-group d-flex flex-wrap preview-container my-2"></div>
+                        <input type="file" class="form-control image-input" name="photo[]" accept="image/*" required multiple>
+                    </div>
                         @error('photo')
                             <p class="text-danger">{{ $message }}</p>
                         @enderror
@@ -253,76 +249,125 @@
     {{-- END: Photo Terima Modal --}}
 @endsection
 
+@push('scripts')
+    {{ $dataTable->scripts() }}
+@endpush
+
 @section('javascript')
     <script>
-        const imageInputs = document.querySelectorAll('.image-input');
-        const previewContainer = document.querySelector('.preview-container');
+        // const imageInputs = document.querySelectorAll('.image-input');
+        // const previewContainer = document.querySelector('.preview-container');
 
-        imageInputs.forEach(input => {
-            input.addEventListener('change', function(event) {
-                previewContainer.innerHTML = '';
+        // imageInputs.forEach(input => {
+        //     input.addEventListener('change', function(event) {
+        //         previewContainer.innerHTML = '';
 
-                const files = event.target.files;
-                for (const file of files) {
-                    const reader = new FileReader();
+        //         const files = event.target.files;
+        //         for (const file of files) {
+        //             const reader = new FileReader();
 
-                    reader.onload = function(e) {
-                        const previewImage = document.createElement('img');
-                        previewImage.className = 'preview-image';
-                        previewImage.src = e.target.result;
-                        previewImage.style = 'height: 150px;';
-                        previewImage.className = 'img-thumbnail btn-group mt-2 me-2 d-inline-flex';
+        //             reader.onload = function(e) {
+        //                 const previewImage = document.createElement('img');
+        //                 previewImage.className = 'preview-image';
+        //                 previewImage.src = e.target.result;
+        //                 previewImage.style = 'height: 100px;';
+        //                 previewImage.className = 'img-thumbnail btn-group mt-2 me-2 d-inline-flex';
 
-                        previewContainer.appendChild(previewImage);
-                    }
+        //                 previewContainer.appendChild(previewImage);
+        //             }
 
-                    reader.readAsDataURL(file);
-                }
-            });
-        });
+        //             reader.readAsDataURL(file);
+        //         }
+        //     });
+        // });
 
         $('#modalLampiran').on('show.bs.modal', function(e) {
-            let btn = $(e.relatedTarget);
-            let photoKirim = btn.data('kirim');
-            let photoTerima = btn.data('terima');
-
-            let kirimHTML = '';
-            let terimaHTML = '';
+            const btn = $(e.relatedTarget);
+            const photoKirim = btn.data('kirim');
+            const photoTerima = btn.data('terima');
 
             function renderPhotos(photoData) {
                 let html = '';
-                try {
-                    photoData = JSON.parse(photoData);
-                } catch {
-                    photoData = photoData ? [photoData] : [];
+
+                if (!photoData) {
+                    return '<p class="text-muted">Belum ada dokumentasi</p>';
                 }
 
-                if (Array.isArray(photoData)) {
-                    photoData.forEach(function(item) {
-                        let photoPath = "{{ asset('storage') }}/" + item;
-                        html += `
-                    <div class="m-2">
-                        <img class="img-thumbnail img-fluid" style="width:250px;" src="${photoPath}" alt="photo">
-                    </div>
-                `;
-                    });
+                // Pastikan photoData selalu array
+                let photos = [];
+                try {
+                    photos = Array.isArray(photoData) ? photoData : JSON.parse(photoData);
+                } catch {
+                    photos = [photoData];
                 }
+
+                photos.forEach(function(item) {
+                    const photoPath = "{{ asset('storage') }}/" + item;
+                    html += `
+                        <div class="m-2 d-inline-block text-wrap">
+                            <img class="img-thumbnail img-fluid" style="height:150px;" src="${photoPath}" alt="photo">
+                        </div>
+                    `;
+                });
+
                 return html || '<p class="text-muted">Belum ada dokumentasi</p>';
             }
 
-            kirimHTML = renderPhotos(photoKirim);
-            terimaHTML = renderPhotos(photoTerima);
-
-            document.getElementById("photo_kirim").innerHTML = kirimHTML;
-            document.getElementById("photo_terima").innerHTML = terimaHTML;
+            document.getElementById("photo_kirim").innerHTML = renderPhotos(photoKirim);
+            document.getElementById("photo_terima").innerHTML = renderPhotos(photoTerima);
         });
 
 
         $('#modalPhotoTerima').on('show.bs.modal', function(e) {
-            var url = $(e.relatedTarget).data('url');
+            const btn = $(e.relatedTarget);
+            const url = btn.data('url');
 
-            document.getElementById("formPhotoTerima").action = url;
+            // Ambil form dan container preview
+            const form = document.getElementById("formPhotoTerima");
+            const previewContainer = form.querySelector('.preview-container');
+            const inputFile = form.querySelector('.image-input');
+
+            // Set action form
+            form.action = url;
+
+            // Reset input & preview setiap kali modal dibuka
+            inputFile.value = '';
+            previewContainer.innerHTML = '';
+
+            // Listener preview & validasi
+            inputFile.addEventListener('change', function(event) {
+                const MAX_PHOTOS = 3;
+                const files = Array.from(event.target.files);
+
+                // Validasi jumlah file
+                if (files.length > MAX_PHOTOS) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Oops!',
+                        text: `Maksimal ${MAX_PHOTOS} foto saja!`,
+                    });
+                    inputFile.value = '';
+                    previewContainer.innerHTML = '';
+                    return;
+                }
+
+                // Render preview
+                previewContainer.innerHTML = '';
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewImage = document.createElement('img');
+                        previewImage.src = e.target.result;
+                        previewImage.style.height = '100px';
+                        previewImage.className = 'img-thumbnail btn-group mt-2 me-2 d-inline-flex';
+                        previewContainer.appendChild(previewImage);
+                    }
+                    reader.readAsDataURL(file);
+                });
+            });
         });
+
+
 
 
         $('input[type="checkbox"]').change(function() {

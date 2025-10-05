@@ -76,6 +76,16 @@ class ShippingController extends Controller
         ]));
     }
 
+    public function getAllBarang()
+    {
+        // ambil semua ID barang yang valid untuk dipilih
+        return response()->json(
+            Barang::whereNotNull('photo')
+                ->where('stock_aktual', '>', 0)
+                ->pluck('id')
+        );
+    }
+
     public function store_pengiriman(Request $request)
     {
         $request->validate([

@@ -21,90 +21,26 @@
             <div class="card">
                 <div class="card-body">
                     <h4 class="d-flex justify-content-center mb-3 text-center" style="text-decoration: underline">Daftar Data
-                        Pengiriman Barang - Seksi ({{ $seksi->name }})</h4>
+                        Pengiriman Barang - Seksi {{ $seksi->name }}</h4>
                     <div class="row d-flex justify-content-between align-items-center">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 mb-3 text-left">
                             <div class="d-flex justify-content-start align-items-center flex-wrap">
-                                <a href="{{ route('aset.kasi.index') }}"
+                                <a href="{{ route('dashboard.index') }}"
                                     class="btn btn-outline-primary mr-2 mb-2 mb-sm-0"><i class="fa fa-arrow-left"></i>
                                     Kembali</a>
                                 <a href="javascript:;" class="btn btn-primary mr-2 mb-2 mb-sm-0" data-toggle="modal"
                                     data-target="#modalFilter" title="Filter"><i class="fa fa-filter"></i></a>
-                                <a href="{{ route('aset.pengiriman.index') }}" class="btn btn-primary mr-2 mb-2 mb-sm-0"
+                                <a href="{{ route('admin.pengiriman.index', $seksi->uuid) }}" class="btn btn-primary mr-2 mb-2 mb-sm-0"
                                     title="Reset Filter">
                                     <i class="fa fa-refresh"></i>
                                 </a>
                             </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                            <form class="form-inline mb-2 d-flex justify-content-end">
-                                <input class="form-control mr-sm-2" type="search" placeholder="Cari sesuatu di sini..."
-                                    aria-label="Search" id="search-bar">
-                                <button class="btn btn-dark my-2 my-sm-0" type="submit">Pencarian</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="paginate-style">
-                        <div class="d-flex justify-content-center mb-2">
-                            <nav aria-label="Pagination">
-                                <ul class="pagination">
-                                    {{ $pengiriman_barang->links('vendor.pagination.bootstrap-4') }}
-                                </ul>
-                            </nav>
-                        </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped" id="dataTable">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">No.</th>
-                                    <th class="text-center">No. Resi</th>
-                                    <th class="text-center">Asal</th>
-                                    <th class="text-center">Tujuan</th>
-                                    <th class="text-center">Pengirim</th>
-                                    <th class="text-center">Penerima</th>
-                                    {{-- <th class="text-center">Catatan</th> --}}
-                                    <th class="text-center">Status</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($pengiriman_barang as $item)
-                                    <tr>
-                                        <td class="text-center">
-                                            {{ ($pengiriman_barang->currentPage() - 1) * $pengiriman_barang->perPage() + $loop->index + 1 }}
-                                        </td>
-                                        <td class="text-center">{{ $item->no_resi }}</td>
-                                        <td class="text-center">Gudang Utama</td>
-                                        <td class="text-center">{{ $item->gudang->name }}</td>
-                                        <td class="text-center text-wrap">{{ $item->submitter->name }}
-                                            {{-- ({{ $item->submitter->jabatan->name }}) --}}
-                                            <br> Dikirim
-                                            ({{ isset($item->tanggal_kirim) ? \Carbon\Carbon::parse($item->tanggal_kirim)->format('d-m-Y') : '-' }})
-                                        </td>
-                                        <td class="text-center text-wrap">{{ $item->receiver->name ?? '-' }} <br> (
-                                            Diterima
-                                            {{ isset($item->tanggal_terima) ? \Carbon\Carbon::parse($item->tanggal_terima)->format('d-m-Y') : '-' }})
-                                        </td>
-                                        {{-- <td class="text-center">
-                                            {{ $item->catatan }}
-                                        </td> --}}
-                                        <td class="text-center">
-                                            <span
-                                                class="btn @if ($item->status == 'Dikirim') btn-warning @else btn-primary @endif">
-                                                {{ $item->status }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="{{ route('admin.pengiriman.show', $item->no_resi) }}"
-                                                class="btn btn-outline-primary" title="Lihat Detail">
-                                                <i class="fa fa-eye"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                        {{ $dataTable->table([
+                            'class' => 'table table-bordered table-striped',
+                        ]) }}
                     </div>
                 </div>
             </div>
@@ -137,7 +73,7 @@
 
     {{-- BEGIN: Filter Modal --}}
     <div class="modal fade" id="modalFilter" tabindex="-1" role="dialog" aria-labelledby="modalFilter" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Filter Data Pengiriman</h5>
@@ -146,15 +82,15 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('aset.pengiriman.filter') }}" id="formFilter" method="GET">
+                    <form action="{{ route('admin.pengiriman.index', $seksi->uuid) }}" id="formFilter" method="GET">
                         @csrf
                         @method('GET')
                         <div class="form-row gutters">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                 <div class="form-group">
-                                    <label for="">Gudang Pulau</label>
+                                    <label for="">Gudang Pulau Tujuan</label>
                                     <select name="gudang_id" class="form-control">
-                                        <option value="" selected disabled>- pilih gudang pulau -</option>
+                                        <option value="" selected disabled>- pilih gudang pulau tujuan -</option>
                                         @foreach ($gudang_pulau as $item)
                                             <option value="{{ $item->id }}"
                                                 @if ($item->id == $gudang_id) selected @endif>
@@ -166,7 +102,7 @@
                                 <div class="form-group">
                                     <label for="">Status</label>
                                     <select name="status" class="form-control">
-                                        <option value="" selected disabled>- pilih status barang -</option>
+                                        <option value="" selected disabled>- pilih status pengiriman -</option>
                                         <option value="Dikirim" @if ($status == 'Dikirim') selected @endif>Dikirim
                                         </option>
                                         <option value="Diterima" @if ($status == 'Diterima') selected @endif>Diterima
@@ -193,19 +129,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row gutters">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                <div class="form-group">
-                                    <label for="">Urutan</label>
-                                    <select name="sort" class="form-control">
-                                        <option value="ASC" @if ($sort == 'ASC') selected @endif>A to Z
-                                        </option>
-                                        <option value="DESC" @if ($sort == 'DESC') selected @endif>Z to A
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -217,6 +140,10 @@
     </div>
     {{-- END: Filter Modal --}}
 @endsection
+
+@push('scripts')
+    {{ $dataTable->scripts() }}
+@endpush
 
 @section('javascript')
     <script>
