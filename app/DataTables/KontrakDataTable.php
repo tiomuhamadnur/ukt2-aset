@@ -59,15 +59,27 @@ class KontrakDataTable extends DataTable
                 if ($item->lampiran) {
                     $fileUrl = asset('storage/' . $item->lampiran);
                     return '
-                        <a href="' . $fileUrl . '" target="_blank" title="Lihat Lampiran">
+                        <a href="' . $fileUrl . '" target="_blank" title="Lihat Dokumen Kontrak">
                             <button class="btn btn-outline-primary">
-                                <i class="fa fa-file"></i>
+                                <i class="fa fa-file"></i> Kontrak
                             </button>
                         </a>
                     ';
                 }
 
-                return '-';
+                return null;
+            })
+            ->addColumn('dokumen_distribusi', function ($item) {
+                $route = route('admin-kontrak.dokumen-distribusi', $item->uuid);
+                $button = '
+                        <a href="' . $route . '" target="_blank" title="Lihat Dokumen Distribusi">
+                            <button class="btn btn-outline-info">
+                                <i class="fa fa-file-text"></i> Distribusi
+                            </button>
+                        </a>
+                    ';
+
+                return $button;
             })
             ->editColumn('nilai_kontrak', function ($item) {
                 return $item->nilai_kontrak !== null
@@ -77,7 +89,7 @@ class KontrakDataTable extends DataTable
             ->editColumn('tanggal', function ($item) {
                 return Carbon::parse($item->tanggal)->format('d-m-Y');
             })
-            ->rawColumns(['dokumen', '#']);
+            ->rawColumns(['dokumen', 'dokumen_distribusi', '#']);
     }
 
     public function query(Kontrak $model): QueryBuilder
@@ -135,7 +147,8 @@ class KontrakDataTable extends DataTable
             Column::make('nilai_kontrak')->title('Nilai Kontrak')->sortable(false)->addClass('text-right'),
             Column::make('seksi.name')->title('Seksi')->sortable(false),
             Column::make('tanggal')->title('Tanggal Pengadaan')->sortable(true)->addClass('text-center'),
-            Column::computed('dokumen')->title('Dokumen')->sortable(false)->addClass('text-center'),
+            Column::computed('dokumen')->title('Dokumen Kontrak')->sortable(false)->addClass('text-center'),
+            Column::computed('dokumen_distribusi')->title('Dokumen Distribusi')->sortable(false)->addClass('text-center'),
             Column::computed('#')
                 ->exportable(false)
                 ->printable(false)

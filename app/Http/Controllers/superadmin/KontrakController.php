@@ -8,6 +8,8 @@ use App\Models\Kontrak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
+use App\Models\Pulau;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
 class KontrakController extends Controller
@@ -152,6 +154,49 @@ class KontrakController extends Controller
             'tahun'      => $tahun ? Carbon::parse($tahun)->format('Y') : now()->year,
             'seksi'      => $seksi,
         ]);
+    }
+
+    public function dokumen_distribusi(string $uuid)
+    {
+        $kontrak = Kontrak::where('uuid', $uuid)
+            ->with(['barang.pengiriman_barang.gudang.pulau'])
+            ->firstOrFail();
+
+        // Ambil semua nama pulau (dinamis, urut A-Z)
+        $semuaPulau = Pulau::orderBy('name')->pluck('name');
+
+        $barangData = $kontrak->barang->map(function($barang) use ($semuaPulau) {
+            // Hitung distribusi per pulau
+            $distribusi = $barang->pengiriman_barang
+                ->filter(fn($p) => $p->gudang && $p->gudang->pulau)
+                ->groupBy(fn($p) => $p->gudang->pulau->name)
+                ->map(fn($items) => $items->sum('qty')) ; // jumlah barang per pengiriman
+
+            // Buat array distribusi lengkap untuk semua pulau (0 jika tidak ada)
+            $distribusiLengkap = $semuaPulau->mapWithKeys(fn($pulau) => [
+                $pulau => $distribusi[$pulau] ?? 0
+            ]);
+
+            // Hitung gudang utama = stock awal - total distribusi
+            $totalDistribusi = $distribusiLengkap->sum();
+            $stockAwal = $barang->stock_awal;
+            $sisaGudangUtama = max($stockAwal - $totalDistribusi, 0);
+
+            return [
+                'nama_barang' => $barang->name,
+                'jumlah_kontrak' => $stockAwal,
+                'gudang_utama' => $sisaGudangUtama,
+                'distribusi' => $distribusiLengkap
+            ];
+        });
+
+        $pdf = Pdf::loadView('superadmin.kontrak.export.pdf', [
+            'kontrak' => $kontrak,
+            'pulau' => $semuaPulau,
+            'barangData' => $barangData
+        ]);
+
+        return $pdf->setPaper('a4', 'landscape')->stream(Carbon::now()->format('Ymd_') . 'Dokumen Distribusi.pdf');
     }
 
     public function destroy(Request $request)

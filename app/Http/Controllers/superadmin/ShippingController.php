@@ -62,7 +62,7 @@ class ShippingController extends Controller
     public function create_pengiriman(Request $request)
     {
         $request->validate([
-            'barang_id' => 'required|array|max:20', // maksimal 20 barang
+            'barang_id' => 'required|array|max:50', // maksimal 50 barang
         ], [
             'barang_id.max' => 'Jumlah barang tidak boleh lebih dari :max item dalam 1 batch pengiriman.',
         ]);
@@ -98,12 +98,12 @@ class ShippingController extends Controller
 
         $gudang = Gudang::all();
 
-        return view('superadmin.shipping.form_kirim', compact(
+        return view('superadmin.shipping.form_kirim', compact([
             'barang',
             'gudang',
             'seksi',
             'submitter'
-        ));
+        ]));
     }
 
     // public function store_pengiriman(Request $request, string $uuid)
@@ -174,7 +174,7 @@ class ShippingController extends Controller
     public function store_pengiriman(Request $request, string $uuid)
     {
         $request->validate([
-            'photo'         => 'nullable|array|max:20', // maksimal 20 foto
+            'photo'         => 'nullable|array|max:50', // maksimal 50 foto
             'photo.*'       => 'nullable|image|max:2048', // tiap foto max 2 MB
             'submitter_id'  => 'required|exists:users,id',
             'tanggal_kirim' => 'required|date',
