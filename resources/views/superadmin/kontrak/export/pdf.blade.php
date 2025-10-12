@@ -44,7 +44,8 @@
                 font-size: 8pt;
             }
 
-            table th, table td {
+            table th,
+            table td {
                 /* border: 1px solid #000; */
                 padding: 4px 6px;
                 text-align: center;
@@ -84,7 +85,7 @@
                             <img src="{{ public_path('assets/img/logo_dki_jakarta.png') }}" style="width: 95px;"
                                 alt="Logo DKI">
                         </td>
-                        <td style="width: 85%; text-align: center; line-height: 1.2; vertical-align: top;">
+                        <td style="width: 70%; text-align: center; line-height: 1.2; vertical-align: top;">
                             <div style="font-size: 11pt;">PEMERINTAH PROVINSI DAERAH KHUSUS IBUKOTA JAKARTA</div>
                             <div style="font-size: 11pt;">KABUPATEN ADMINISTRASI KEPULAUAN SERIBU</div>
                             <div style="font-size: 13pt; font-weight: bold;">SEKRETARIAT KABUPATEN ADMINISTRASI</div>
@@ -93,7 +94,10 @@
                             <div style="font-size: 8pt;">E-mail bupati_ps@jakarta.go.id dan bupati.kep1000@gmail.com
                             </div>
                             <div style="font-size: 11pt; font-weight: bold; letter-spacing: 1px;">J A K A R T A</div>
-                            <div style="text-align: right; font-size: 8pt; padding-right: 0px;">Kode Pos 14530</div>
+                        </td>
+                        <td
+                            style="width: 15%; vertical-align: bottom; text-align: right; font-size: 8pt; padding-right: 0;">
+                            Kode Pos 14530
                         </td>
                     </tr>
                 </tbody>
@@ -114,27 +118,30 @@
                     <p>Kontrak: {{ $kontrak->name }} ({{ $kontrak->no_kontrak ?? 'N/A' }})</p>
                 </div>
                 <div class="mt-2">
-                    <table class="table table-bordered mt-2" style="width: 100%;">
+                    <table class="table table-bordered"
+                        style="width: 100%; border-collapse: collapse; font-size: 9pt;">
                         <thead>
                             <tr>
-                                <th class="bg-warm-yellow">No</th>
-                                <th class="bg-warm-yellow">Nama Barang</th>
-                                <th class="bg-warm-yellow">Jumlah</th>
-                                <th class="bg-warm-yellow">Gudang Utama</th>
+                                <th class="bg-warm-yellow" style="padding: 3px; text-align: center;">No</th>
+                                <th class="bg-warm-yellow" style="padding: 3px;">Nama Barang</th>
+                                <th class="bg-warm-yellow" style="padding: 3px; text-align: center;">Jumlah</th>
+                                <th class="bg-warm-yellow" style="padding: 3px; text-align: center;">Gudang Utama</th>
                                 @foreach ($pulau as $p)
-                                    <th class="bg-warm-yellow">{{ $p }}</th>
+                                    <th class="bg-warm-yellow" style="padding: 3px; text-align: center;">
+                                        {{ $p }}</th>
                                 @endforeach
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($barangData as $index => $barang)
                                 <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $barang['nama_barang'] }}</td>
-                                    <td>{{ $barang['jumlah_kontrak'] }}</td>
-                                    <td>{{ $barang['gudang_utama'] }}</td>
+                                    <td style="padding: 2px; text-align: center;">{{ $index + 1 }}</td>
+                                    <td style="padding: 2px; text-align: left;">{{ $barang['nama_barang'] }}</td>
+                                    <td style="padding: 2px; text-align: center;">{{ $barang['jumlah_kontrak'] }}</td>
+                                    <td style="padding: 2px; text-align: center;">{{ $barang['gudang_utama'] }}</td>
                                     @foreach ($pulau as $p)
-                                        <td>{{ $barang['distribusi'][$p] }}</td>
+                                        <td style="padding: 2px; text-align: center;">{{ $barang['distribusi'][$p] }}
+                                        </td>
                                     @endforeach
                                 </tr>
                             @endforeach

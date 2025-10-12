@@ -70,14 +70,29 @@ class KontrakDataTable extends DataTable
                 return null;
             })
             ->addColumn('dokumen_distribusi', function ($item) {
-                $route = route('admin-kontrak.dokumen-distribusi', $item->uuid);
+                $routePDF = route('admin-kontrak.dokumen-distribusi.pdf', $item->uuid);
+                $routeExcel = route('admin-kontrak.dokumen-distribusi.excel', $item->uuid);
                 $button = '
-                        <a href="' . $route . '" target="_blank" title="Lihat Dokumen Distribusi">
-                            <button class="btn btn-outline-info">
-                                <i class="fa fa-file-text"></i> Distribusi
-                            </button>
-                        </a>
-                    ';
+                    <div class="dropdown">
+                        <button class="btn btn-outline-info"
+                            id="exportDropdown" role="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false" title="Lihat Distribusi Barang">
+                            <i class="fa fa-file-text"></i> Distribusi
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                            <li>
+                                <a class="dropdown-item text-dark" href="' . $routeExcel . '" target="_blank" title="Export Excel">
+                                    <i class="fa fa-file-excel text-primary"></i> Export Excel
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-dark" href="' . $routePDF . '" target="_blank" title="Export PDF">
+                                    <i class="fa fa-file-pdf text-danger"></i> Export PDF
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                ';
 
                 return $button;
             })

@@ -2,7 +2,7 @@
     <script>
         Swal.fire({
             icon: "success",
-            title: "Success!",
+            title: "Sukses!",
             html: @json(session('notify')) // pakai html, bukan text
         }).then(() => {
             if (window.history.replaceState) {

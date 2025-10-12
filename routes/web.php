@@ -568,7 +568,8 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::post('admini-store', 'store')->name('admin-kontrak.store');
                 Route::get('/admin-kontrak/{uuid}/edit', 'edit')->name('admin-kontrak.edit');
                 Route::get('/admin-kontrak/seksi/{uuid}/filter', 'filter')->name('admin-kontrak.filter');
-                Route::get('/admin-kontrak/{uuid}/dokumen-distribusi', 'dokumen_distribusi')->name('admin-kontrak.dokumen-distribusi');
+                Route::get('/admin-kontrak/{uuid}/dokumen-distribusi/pdf', 'dokumen_distribusi_pdf')->name('admin-kontrak.dokumen-distribusi.pdf');
+                Route::get('/admin-kontrak/{uuid}/dokumen-distribusi/excel', 'dokumen_distribusi_excel')->name('admin-kontrak.dokumen-distribusi.excel');
                 Route::put('/admin-kontrak/{uuid}/update', 'update')->name('admin-kontrak.update');
                 Route::delete('/admin-kontrak-delete', 'destroy')->name('admin-kontrak.delete');
             });

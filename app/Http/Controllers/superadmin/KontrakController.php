@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\superadmin;
 
 use App\DataTables\KontrakDataTable;
+use App\Exports\kontrak\DistribusiBarangExport;
 use App\Models\Seksi;
 use App\Models\Kontrak;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pulau;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class KontrakController extends Controller
 {
@@ -156,7 +158,7 @@ class KontrakController extends Controller
         ]);
     }
 
-    public function dokumen_distribusi(string $uuid)
+    public function dokumen_distribusi_pdf(string $uuid)
     {
         $kontrak = Kontrak::where('uuid', $uuid)
             ->with(['barang.pengiriman_barang.gudang.pulau'])
@@ -197,6 +199,24 @@ class KontrakController extends Controller
         ]);
 
         return $pdf->setPaper('a4', 'landscape')->stream(Carbon::now()->format('Ymd_') . 'Dokumen Distribusi.pdf');
+    }
+
+    public function dokumen_distribusi_excel(string $uuid)
+    {
+        $kontrak = Kontrak::where('uuid', $uuid)
+            ->with(['barang.pengiriman_barang.gudang.pulau'])
+            ->firstOrFail();
+
+        $waktu = Carbon::now()->format('Ymd_His');
+
+        // Bersihkan karakter yang tidak boleh ada di nama file
+        $nama_kontrak = preg_replace('/[\/\\\\]/', '-', $kontrak->name);
+        $no_kontrak = preg_replace('/[\/\\\\]/', '-', $kontrak->no_kontrak);
+
+        // Susun nama file yang rapi
+        $name = "{$waktu}_Data_Distribusi_Barang_{$nama_kontrak} ({$no_kontrak}).xlsx";
+
+        return Excel::download(new DistribusiBarangExport($uuid), $name, \Maatwebsite\Excel\Excel::XLSX);
     }
 
     public function destroy(Request $request)
