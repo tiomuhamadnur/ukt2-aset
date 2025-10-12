@@ -580,7 +580,6 @@ Route::group(['middleware' => 'auth'], function () {
                 Route::post('/admin/gudang-utama/{uuid}/store', 'admin_store')->name('admin.gudang-utama.store');
                 Route::get('/admin-gudang-utama/{uuid}/edit', 'admin_edit')->name('admin.gudang-utama.edit');
                 Route::put('/admin-gudang-utama/{uuid}/update', 'admin_update')->name('admin.gudang-utama.update');
-                Route::get('/admin-gudang-utama/filter', 'admin_filter')->name('aset.gudang-utama.filter');
                 Route::delete('/admin-gudang-barang-delete', 'destroy')->name('admin.gudang-utama.delete');
                 Route::get('/admin-gudang-pulau', 'kasi_gudang_pulau')->name('aset.gudang-pulau');
                 Route::get('/admin-gudang-pulau/filter', 'kasi_gudang_pulau_filter')->name('aset.gudang-pulau.filter');
