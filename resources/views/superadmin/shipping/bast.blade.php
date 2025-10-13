@@ -110,9 +110,9 @@
                 <tbody>
                     <tr>
                         <td style="width: 15%; text-align: center; vertical-align: top;">
-                            <img src="{{ public_path('assets/img/logo_dki_jakarta.png') }}" style="width: 95px;" alt="Logo DKI">
+                            <img src="{{ public_path('assets/img/logo_dki_jakarta.png') }}" style="width: 80px;" alt="Logo DKI">
                         </td>
-                        <td style="width: 85%; text-align: center; line-height: 1.2; vertical-align: top;">
+                        <td style="width: 70%; text-align: center; line-height: 1.2; vertical-align: top;">
                             <div style="font-size: 11pt;">PEMERINTAH PROVINSI DAERAH KHUSUS IBUKOTA JAKARTA</div>
                             <div style="font-size: 11pt;">KABUPATEN ADMINISTRASI KEPULAUAN SERIBU</div>
                             <div style="font-size: 13pt; font-weight: bold;">SEKRETARIAT KABUPATEN ADMINISTRASI</div>
@@ -121,7 +121,10 @@
                             <div style="font-size: 8pt;">E-mail bupati_ps@jakarta.go.id dan bupati.kep1000@gmail.com
                             </div>
                             <div style="font-size: 11pt; font-weight: bold; letter-spacing: 1px;">J A K A R T A</div>
-                            <div style="text-align: right; font-size: 8pt; padding-right: 0px;">Kode Pos 14530</div>
+                        </td>
+                        <td
+                            style="width: 15%; vertical-align: bottom; text-align: right; font-size: 8pt; padding-right: 0;">
+                            Kode Pos 14530
                         </td>
                     </tr>
                 </tbody>

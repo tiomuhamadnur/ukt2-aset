@@ -20,7 +20,7 @@
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
             <div class="info-stats4">
                 <div class="info-icon">
-                    <i class="icon-user"></i>
+                    <i class="fa fa-file-text"></i>
                 </div>
                 <div class="sale-num">
                     <h4>{{ number_format($jumlah_kontrak, 0, ',', '.') }}</h4>
@@ -31,7 +31,7 @@
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
             <div class="info-stats4">
                 <div class="info-icon">
-                    <i class="icon-user-minus"></i>
+                    <i class="fa fa-truck"></i>
                 </div>
                 <div class="sale-num">
                     <h4>{{ number_format($pengiriman_hari_ini, 0, ',', '.') }}</h4>
@@ -42,7 +42,7 @@
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
             <div class="info-stats4">
                 <div class="info-icon">
-                    <i class="icon-shopping-bag1"></i>
+                    <i class="fa fa-line-chart"></i>
                 </div>
                 <div class="sale-num">
                     <h4>{{ number_format($stock_gudang_utama, 0, ',', '.') }}</h4>
@@ -53,7 +53,7 @@
         <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
             <div class="info-stats4">
                 <div class="info-icon">
-                    <i class="icon-activity"></i>
+                    <i class="fa fa-arrow-down"></i>
                 </div>
                 <div class="sale-num">
                     <h4>{{ number_format($stock_habis_gudang_utama, 0, ',', '.') }}</h4>

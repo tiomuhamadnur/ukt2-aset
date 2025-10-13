@@ -160,26 +160,44 @@ class KontrakController extends Controller
 
     public function dokumen_distribusi_pdf(string $uuid)
     {
+        // 1. Ambil Kontrak dengan Eager Loading yang lebih spesifik
+        // Load hanya relasi yang benar-benar dibutuhkan dan lakukan filtering/ordering di database jika mungkin.
         $kontrak = Kontrak::where('uuid', $uuid)
-            ->with(['barang.pengiriman_barang.gudang.pulau'])
+            ->with([
+                // Eager load barang, lalu pengiriman_barang, dan gudang.
+                'barang.pengiriman_barang.gudang.pulau',
+            ])
             ->firstOrFail();
 
-        // Ambil semua nama pulau (dinamis, urut A-Z)
+        // 2. Ambil semua nama pulau (dinamis, urut A-Z)
         $semuaPulau = Pulau::orderBy('name')->pluck('name');
+        $semuaPulauList = $semuaPulau->toArray(); // Konversi ke array untuk lookup cepat
 
-        $barangData = $kontrak->barang->map(function($barang) use ($semuaPulau) {
-            // Hitung distribusi per pulau
+        // 3. Ambil data agregat distribusi dari database
+        // Menggunakan eager loading di atas sudah memuat data, kita fokus pada pemrosesan
+        // Jika data PengirimanBarang sangat besar, pendekatan raw/query builder murni lebih baik,
+        // tetapi untuk meminimalkan perubahan dan memanfaatkan relasi yang sudah dimuat:
+        $barangData = $kontrak->barang->map(function($barang) use ($semuaPulau, $semuaPulauList) {
+            // Map untuk inisialisasi distribusi dengan 0 untuk semua pulau
+            $distribusiLengkap = array_fill_keys($semuaPulauList, 0);
+
+            // Hitung distribusi per pulau dari relasi yang sudah dimuat
             $distribusi = $barang->pengiriman_barang
                 ->filter(fn($p) => $p->gudang && $p->gudang->pulau)
                 ->groupBy(fn($p) => $p->gudang->pulau->name)
-                ->map(fn($items) => $items->sum('qty')) ; // jumlah barang per pengiriman
+                ->map(fn($items) => $items->sum('qty'));
 
-            // Buat array distribusi lengkap untuk semua pulau (0 jika tidak ada)
-            $distribusiLengkap = $semuaPulau->mapWithKeys(fn($pulau) => [
-                $pulau => $distribusi[$pulau] ?? 0
-            ]);
+            // Isi array distribusi lengkap
+            foreach ($distribusi as $pulauName => $qty) {
+                if (in_array($pulauName, $semuaPulauList)) {
+                    $distribusiLengkap[$pulauName] = $qty;
+                }
+            }
 
-            // Hitung gudang utama = stock awal - total distribusi
+            // Konversi kembali ke Collection untuk kemudahan sum (atau tetap di array, lalu array_sum)
+            $distribusiLengkap = collect($distribusiLengkap);
+
+            // Hitung gudang utama
             $totalDistribusi = $distribusiLengkap->sum();
             $stockAwal = $barang->stock_awal;
             $sisaGudangUtama = max($stockAwal - $totalDistribusi, 0);
@@ -188,9 +206,12 @@ class KontrakController extends Controller
                 'nama_barang' => $barang->name,
                 'jumlah_kontrak' => $stockAwal,
                 'gudang_utama' => $sisaGudangUtama,
+                // Kembalikan sebagai Collection agar konsisten di view
                 'distribusi' => $distribusiLengkap
             ];
         });
+
+        // ... (Bagian PDF tetap sama)
 
         $pdf = Pdf::loadView('superadmin.kontrak.export.pdf', [
             'kontrak' => $kontrak,
@@ -198,7 +219,7 @@ class KontrakController extends Controller
             'barangData' => $barangData
         ]);
 
-        return $pdf->setPaper('a4', 'landscape')->stream(Carbon::now()->format('Ymd_') . 'Dokumen Distribusi.pdf');
+        return $pdf->setPaper('a4', 'landscape')->stream(now()->format('Ymd_') . 'Dokumen Distribusi.pdf');
     }
 
     public function dokumen_distribusi_excel(string $uuid)
