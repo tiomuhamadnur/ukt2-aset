@@ -50,7 +50,7 @@
                                 required>
                         </div>
                         <div class="form-group">
-                            <label for="">Dokumen Kontrak <span class="text-info">(opsional)</span> <span class="text-danger">(PDF Max: 1MB)</span></label>
+                            <label for="">Dokumen Kontrak <span class="text-info">(opsional)</span> <span class="text-danger">(PDF Max: 10MB)</span></label>
                             <input type="file" class="form-control" name="lampiran" placeholder="Dokumen Kontrak"
                                 accept="application/pdf">
                             @error('lampiran')

@@ -60,11 +60,11 @@ class KontrakController extends Controller
 
         $request->validate(
             [
-                'lampiran' => 'nullable|file|mimes:pdf|max:1024',
+                'lampiran' => 'nullable|file|mimes:pdf|max:10240',
             ],
             [
                 'lampiran.mimes' => 'Lampiran harus berupa file PDF',
-                'lampiran.max'   => 'Ukuran file lampiran maksimal 1 MB',
+                'lampiran.max'   => 'Ukuran file lampiran maksimal 10 MB',
             ]
         );
 
@@ -101,10 +101,11 @@ class KontrakController extends Controller
         ]);
 
         $request->validate([
-            'lampiran'     => 'nullable|file|mimes:pdf|max:1024',
+            'lampiran'     => 'nullable|file|mimes:pdf|max:10240',
         ],
         [
-            'lampiran.max' => 'Ukuran file lampiran maksimal 1 MB',
+            'lampiran.mimes' => 'Lampiran harus berupa file PDF',
+            'lampiran.max' => 'Ukuran file lampiran maksimal 10 MB',
         ]);
 
         $kontrak = Kontrak::where('uuid',$uuid)->firstOrFail();

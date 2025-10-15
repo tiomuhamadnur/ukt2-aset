@@ -50,7 +50,7 @@
                                 onfocus="(this.type='date')" class="form-control" name="tanggal">
                         </div>
                         <div class="form-group">
-                            <label for="">Dokumen Kontrak <span class="text-danger">(PDF Max: 1MB)</span></label>
+                            <label for="">Dokumen Kontrak <span class="text-danger">(PDF Max: 10MB)</span></label>
                             <input type="file" class="form-control" name="lampiran" placeholder="Dokumen Kontrak Kontrak"
                                 required accept="application/pdf" required>
                             @error('lampiran')
